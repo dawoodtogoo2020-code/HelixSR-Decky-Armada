@@ -1,25 +1,25 @@
 # Release review, 13 October 2026
 
-HelixSR Decky Armada 0.2.0 is installed on the AYN Odin 3 running Armada 20261012.f9e8e2a. Version 0.2.1 is a prepared local candidate, not installed or device-tested. Both releases remain private and unpublished.
+HelixSR Decky Armada 0.2.1 is installed on the Odin. Its 47 packaged files matched the installer, settings survived, and PRAGMATA/Witcher closed-game disable and enable cycles passed provider hashes and Steam readback. PRAGMATA's independently installed combined LSFG launcher was retained. Version 0.3.0 is the interface and DX12-filtering candidate; installation and physical controller checks are tracked separately.
 
-The installed plugin loaded, verified native ARM64 through FEX and actual Adreno 830 D3D12 wave64/vkd3d capability, and validated the exact private HelixSR 1.8.0 Model E V762 source. PRAGMATA adoption, disable and enable passed: disable restored its independently verified genuine AMD FSR DLL, and enable restored the provider, network pack, weights and INI to pinned hashes. Steam launch options were saved and read back in both directions with the game closed.
+The 0.3.0 interface uses a detected-DX12 list, actionable status, one enable toggle, conditional executable/renderer setup, Settings and Advanced troubleshooting. Managed records excluded from suggestions remain accessible for restoration. Launch operations use an in-flight lock, fresh running status, exact readback and pending receipts. Configuration preservation follows the latest Steam Deck fixes.
 
-The user physically confirmed gameplay and movement with HelixSR running, correct and smoother gameplay with HelixSR plus LSFG 2x, and smooth gameplay after the latest automatic cold launch. The separate PRAGMATA helper passed two automatic cold starts, activating 2x after 20.47 and 18.94 seconds; live Decky changes reached the running session and the first temporary configuration was cleaned on exit. These confirmations establish the tested sessions, not measured FPS gains or broad compatibility. Black remote captures contradicted the physical display and cannot establish a rendering failure. The combined evidence is recorded by the coordinating chat in Odin-combined-launch-installation.json.
+## Gameplay evidence
 
-Version 0.2.1 fixes the gap where disabling V762 restored the original Steam options and a later enable lost the independent startup helper. A separate receipt stores only the recognized PRAGMATA helper path, pinned hash and WSI intent. It never stores or replays an old full launch string. Re-enable merges into current Steam options, checks the helper during preview and again immediately before game-file writes, and blocks conflicting settings. Missing or changed helpers do not prevent disabling. Original launch receipt semantics remain intact. Remove restores the earliest owned launch settings and clears the helper attachment record; independently installed helper files, the native LSFG engine and global configuration are untouched. Older managed installations without a launch receipt preserve their unowned options on disable and need manual launch-setting review.
+PRAGMATA has historical physical gameplay and combined LSFG 2x confirmation. Two earlier automatic cold starts activated 2x after 20.47 and 18.94 seconds. These are session observations, not measured FPS gains or proof for the new plugin build.
 
-## Required Odin checks for the 0.2.1 preview
+Witcher 3 DX12 uses its direct FSR provider route. Helix V762 flashed black textures with AO off, FSR Quality, a 30 FPS cap and LSFG off. The matched original FSR run was physically clean. A reboot retest was interrupted by an OS update. Witcher remains unaccepted until fresh same-scene visual testing succeeds. Its saved LSFG profile starts Off; live Off-to-2x behavior still needs confirmation. Earlier thermal cutoffs occurred at 1100 MHz; the intended showcase setting is 967 MHz with automatic fans.
 
-1. With PRAGMATA closed, install 0.2.1 over the separate Armada plugin. Confirm Decky loads it, finds the existing source and managed game, and retains settings.
-2. Disable and re-enable V762 through Decky. Verify genuine FSR and pinned V762 hashes, exact Steam readback, retained helper/WSI settings, and preservation of an unrelated option added while disabled. Repeat once and verify interrupted launch-setting repair remains usable.
-3. Cold-launch PRAGMATA after that toggle cycle, Continue into gameplay, and physically confirm the image, movement and automatic LSFG 2x activation. Repeat at least three launches, including one after a device reboot. Verify live off/2x controls and session cleanup.
-4. Run a sustained gameplay session at the intended underclock. Record crashes, frame pacing, temperatures and fan behavior. No performance-gain claim is justified without a matched comparison.
-5. Test the stock/removal path with the game closed, then restore the desired managed configuration. Confirm the independent LSFG setup, saves and shader caches remain intact.
+## Remaining Odin checks
 
-The Witcher 3 DX12 needs a separate installation, launch and gameplay test before adding it to supported titles. Test its OptiScaler route, toggles and restoration, and combine LSFG only after Helix alone works. Stellar Blade and Android GameHub, DeckDroid and GameNative remain unverified. This plugin targets Armada Linux.
+1. Load 0.3.0, check controller focus, DX12-only suggestions, existing records, source preservation and disabled actions while running.
+2. With games closed, verify toggles and interrupted launch repair, including exact readback and the independent PRAGMATA helper.
+3. Physically accept Witcher's image with Helix alone before testing LSFG Off-to-2x. Record sustained behavior, temperatures and pacing at the intended underclock.
+4. Cold-launch PRAGMATA after the new toggle cycle, including a reboot launch, and confirm image, helper activation and live LSFG controls.
+5. Check full removal/restoration without disturbing independent LSFG, saves or shader caches.
 
-## V762 source preview and publication gates
+Stellar Blade and Android GameHub, DeckDroid and GameNative remain unverified. This plugin targets Armada Linux.
 
-The separate source-only kit reproduced all four pinned override hashes from held private runtime dumps and passed independent SPIR-V validation. It includes generic transformation tools, manifests, grammar and licenses. A clean redistributable probe and tested workflow from an ordinary user's official HelixSR assets to the matching runtime dumps are still missing. This is an additional release blocker that gameplay testing alone cannot resolve.
+## Publication gates
 
-Public release remains held for the candidate's Odin checks, the complete user-buildable extraction workflow, final package review and publication approval. The packages contain no provider DLL, NVIDIA network weights, generated network pack or compiled game shader overrides. The author permitted the free unofficial adaptation; this does not grant redistribution rights to third-party network data.
+Both releases remain private and unpublished. The separate source-only V762 kit reproduces four override hashes from held runtime dumps, but a clean ordinary-user workflow from official assets to matching dumps is still missing. Physical acceptance, final package review and publication approval also remain outstanding. The author's permission for a free unofficial adaptation does not grant redistribution rights to third-party network assets.

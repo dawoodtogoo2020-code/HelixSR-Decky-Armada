@@ -82,11 +82,39 @@ class ArmadaManager(Manager):
         data = super().assess(game, detailed=detailed, executable=executable)
         rec = self.record(game)
         data['backend'] = BACKEND
+        # Discovery is evidence, not confirmation from a title or folder name.
+        # Keep every record in the backend so an excluded game can still restore.
+        data['dx12_detected'] = self._dx12_detected(data)
+        if str(game.get('appid', '')) == '292030':
+            data['gameplay_warning'] = (
+                'Witcher 3 has unresolved flashing textures with V762. '
+                'Original FSR was clean in the matched test; Helix gameplay still needs visual testing.')
         if rec.get('backend') == BACKEND:
+            data['installed_version'] = rec.get('version')
             data['installed_model'] = 'HelixSR Model E'
             data['installed_variant'] = 'helixsr-model-e'
             data['adopted'] = bool(rec.get('adopted'))
         return data
+
+    @staticmethod
+    def _dx12_detected(data):
+        if data.get('renderer_unsupported'):
+            return False
+        main = data.get('main_exe')
+        if main:
+            info = pe_info(Path(main))
+            if info['arch'] == 'x64' and info['dx12']:
+                return True
+        if any(choice.get('dx12') is True for choice in data.get('executable_choices', [])):
+            # Choices have already passed the scanned x64 Windows PE check.
+            return True
+        if data.get('route') == 'direct':
+            targets = data.get('targets', [])
+            if targets:
+                info = [pe_info(Path(target)) for target in targets if Path(target).is_file()]
+                return len(info) == len(targets) and all(
+                    item['arch'] == 'x64' and item['ffx'] for item in info)
+        return False
 
     def record_metadata(self, game, data, action):
         return {'backend': BACKEND, 'model': 'helixsr-model-e'}

@@ -104,6 +104,45 @@ class ArmadaSafety(unittest.TestCase):
                 self.manager.prepare_private(game['id'])
             self.assertTrue(self.manager.prepare_private(game['id'], executable=selected)['ready'])
 
+    def test_dx12_discovery_uses_pe_evidence_and_preserves_full_library(self):
+        self.manager.host_eligible = lambda: True
+        def assess(name, exe, provider=None, appid='3357650'):
+            root = self.base / 'games' / name
+            root.mkdir(parents=True)
+            (root / 'Game.exe').write_bytes(exe)
+            (root / ('amd_fidelityfx_upscaler_dx12.dll' if provider else 'nvngx_dlss.dll')).write_bytes(
+                provider if provider is not None else pe())
+            game = {'id': 'steam:' + name, 'appid': appid, 'name': name,
+                    'folder': str(root), 'source': 'Steam'}
+            self.manager.entries[game['id']] = game
+            return self.manager.assess(game, detailed=False)
+        with patch('manager.active_processes', return_value=[]):
+            self.assertFalse(assess('DX12 in title only', pe())['dx12_detected'])
+            self.assertFalse(assess('32 bit', pe(dx12=True, machine=0x14c))['dx12_detected'])
+            self.assertFalse(assess('Filename only', pe(), pe())['dx12_detected'])
+            self.assertTrue(assess('Imported DX12', pe(dx12=True))['dx12_detected'])
+            self.assertTrue(assess('Native FidelityFX', pe(), pe(ffx=True))['dx12_detected'])
+            self.assertFalse(assess('Known DX11 only', pe(dx12=True), appid='1593500')['dx12_detected'])
+        # Frontend filtering must not remove access to backend restoration records.
+        self.assertEqual(len(self.manager.entries), 6)
+
+    def test_dx12_discovery_ignores_launcher_and_accepts_scanned_x64_choice(self):
+        root = self.base / 'games' / 'Choices'
+        root.mkdir(parents=True)
+        (root / 'nvngx_dlss.dll').write_bytes(pe())
+        (root / 'Launcher.exe').write_bytes(pe(dx12=True))
+        (root / 'LargeWrong.exe').write_bytes(pe(machine=0x14c) + b'padding' * 2048)
+        (root / 'Game.exe').write_bytes(pe())
+        game = {'id': 'steam:choices', 'appid': '42', 'name': 'Choices',
+                'folder': str(root), 'source': 'Steam'}
+        self.manager.host_eligible = lambda: True
+        with patch('manager.active_processes', return_value=[]):
+            self.assertFalse(self.manager.assess(game, detailed=False)['dx12_detected'])
+            (root / 'DX12.exe').write_bytes(pe(dx12=True))
+            data = self.manager.assess(game, detailed=False)
+            self.assertTrue(data['dx12_detected'])
+            self.assertNotIn('Launcher.exe', [item['path'] for item in data['executable_choices']])
+
     def test_symlinked_source_file_rejected(self):
         path = self.source / 'helixsr.ini'
         target = self.base / 'ini-target'
