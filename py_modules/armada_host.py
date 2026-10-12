@@ -26,8 +26,8 @@ class ArmadaHost:
             self.facts={'native_arch':native_arch,'reason':'A native ARM64 host is required'};return self.snapshot()
         stamp={'native_arch':native_arch,'boot':Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
                'runtime':str(runtime),'proton_sha256':digest(runtime/'proton'),
-               'os_release_sha256':digest('/etc/os-release'),'probe_sha256':PROBE_SHA,
-               'driver_sha256':digest('/usr/lib64/libvulkan_freedreno.so')}
+               'os_release_sha256':digest(native_root+'/etc/os-release'),'probe_sha256':PROBE_SHA,
+               'driver_sha256':digest(native_root+'/usr/lib64/libvulkan_freedreno.so')}
         runtime_files=[p for name in ('d3d12.dll','d3d12core.dll','wine','wineserver') for p in (runtime/'files').rglob(name) if p.is_file()]
         stamp['runtime_files']={str(p.relative_to(runtime)):digest(p) for p in sorted(set(runtime_files))}
         try:
