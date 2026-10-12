@@ -16,6 +16,7 @@ from manager import (Manager, DLL, NETWORK, AMD_FG, PACKAGE_FILES, atomic_json,
 from model_variants import package_selection
 from operation_lock import operation_lock
 from library import safe_root
+from launch_addons import recognized, verified_addon, write_record
 
 VERSION = '1.8.0'
 BACKEND = 'armada-v762-wave64'
@@ -266,6 +267,25 @@ class ArmadaManager(Manager):
         # launch options and avoid shell backslash interpretation.
         return {'VKD3D_SHADER_OVERRIDE': 'Z:' + path.as_posix(), 'PROTON_USE_ARM64': '1'}
 
+    def remember_launch_addon(self, gid, actual_owned_after):
+        """Remember only PRAGMATA's recognized helper intent, never Steam options."""
+        game = self.get_game(gid)
+        if not self.record(game).get('enabled'):
+            raise ValueError('Enable this managed game before capturing a launch addon')
+        with operation_lock(self.companion(game)):
+            addon = recognized(game, actual_owned_after)
+            write_record(self.companion(game), game, addon)
+            return {'remembered': addon is not None}
+
+    def launch_addon(self, game):
+        return verified_addon(self.companion(game), game)
+
+    def _verify_launch_addon_preview(self, game, preview):
+        if preview.get('action') not in ('install', 'update', 'enable', 'armada-adopt'):
+            return
+        if 'launch_addon' not in preview or self.launch_addon(game) != preview['launch_addon']:
+            raise ValueError('Combined launcher changed since preview; review it again')
+
     def status(self, gid):
         game = self.get_game(gid)
         data = self.assess_safe(game)
@@ -281,11 +301,28 @@ class ArmadaManager(Manager):
 
     def preview(self, gid, action, dx12_confirmed=False, executable=None):
         if action == 'adopt':
-            return self._preview_adopt(gid)
-        result = super().preview(gid, action, dx12_confirmed, executable)
+            result = self._preview_adopt(gid)
+        else:
+            result = super().preview(gid, action, dx12_confirmed, executable)
         result['backend'] = BACKEND
+        if action in ('install', 'update', 'enable', 'adopt'):
+            game = self.get_game(gid)
+            try:
+                addon = self.launch_addon(game)
+            except BaseException:
+                self.previews.pop(result['token'], None)
+                raise
+            self.previews[result['token']]['launch_addon'] = addon
+            result['launch_addon'] = addon
         if action in ('install', 'update', 'enable'):
             result['launch_environment'] = self.launch_environment(self.get_game(gid))
+        return result
+
+    def _execute_reviewed(self, game, preview):
+        self._verify_launch_addon_preview(game, preview)
+        result = super()._execute_reviewed(game, preview)
+        if preview['action'] == 'remove':
+            write_record(self.companion(game), game, None)
         return result
 
     def execute(self, token, launch_environment_verified=False):
@@ -349,6 +386,7 @@ class ArmadaManager(Manager):
             raise ValueError('Adoption preview expired')
         game = self.get_game(preview['game'])
         with operation_lock(self.companion(game)):
+            self._verify_launch_addon_preview(game, preview)
             data = self.assess(game)
             if (active_processes(game['folder'], game.get('appid', '')) or self.record(game)
                     or data['compatibility'] != 'candidate'):

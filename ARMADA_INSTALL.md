@@ -1,4 +1,4 @@
-# HelixSR Decky Armada 0.2.0 preview
+# HelixSR Decky Armada 0.2.1 preview
 
 This is the unofficial Blackheart909 Armada adaptation of HelixSR Decky. HelixSR itself is by lonewolf0622. V762 is a local Snapdragon shader revision of HelixSR 1.8.0 Model E, not an official HelixSR version number or NVIDIA DLSS release.
 
@@ -13,6 +13,10 @@ The private source must contain `amd_fidelityfx_dx12.dll`, `helixsr_kernels.pak`
 The plugin creates a companion folder beside each game: `<game> Mod Files/HelixSR-Decky-Armada`. It holds verified packages, the original game DLLs required for disabling, and installation and launch-setting records. Preserve it while the game is managed. The plugin changes only its recorded game files and owns only the Steam launch options it adds. Custom shell launch scripts and conflicting override assignments need manual review and are preserved.
 
 Use stock upscaler disables V762 and restores the recorded original. Enable V762 restores the pinned version. Remove restores game files. Repair launch settings retries an interrupted Steam save or restores this plugin's owned settings after disabling/removing. Recover interrupted change handles a game-file transaction. Close the game before all changes.
+
+Version 0.2.1 also preserves the intent of PRAGMATA's separately installed combined HelixSR/LSFG launch helper across a stock/V762 toggle. It captures only the recognized, finalized plugin-owned helper configuration before disabling. Re-enable verifies the helper's pinned hash and reapplies it to the current Steam options, retaining edits made while V762 was disabled. Conflicting options or a changed/missing helper block re-enable for review. Disable remains available when the helper is missing or changed. Remove restores the original Steam options and clears the helper-preservation record after restoring game files; it does not delete the independent helper or LSFG installation.
+
+The helper is not bundled or automatically installed by this preview. This integration is scoped to Steam PRAGMATA and the tested `Combined-Helix-LSFG-20261012/pragmata-combined-launch.py` helper. Version 0.2.1 has offline validation only; the installed Odin version remains 0.2.0 until the candidate is explicitly installed and tested.
 
 Existing installations can be adopted only with the exact V762 files and an independently verified genuine original FSR DLL bound to that same game folder. The preview installed on the maintainer's Odin seeds PRAGMATA's known original; selecting a different source does not reuse that binding for another game.
 

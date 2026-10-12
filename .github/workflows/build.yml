@@ -27,6 +27,7 @@ jobs:
           node --experimental-strip-types --test tests/test_armada_launch.mjs
           pnpm audit --audit-level=low
           python3 -m unittest discover -s tests -p 'test_armada_backend.py'
+          python3 -m unittest discover -s tests -p 'test_armada_addons.py'
           python3 -m unittest discover -s tests -p 'test_launch_receipts.py'
           python3 scripts/package_armada.py
           mkdir -p release

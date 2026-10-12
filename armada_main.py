@@ -8,7 +8,7 @@ from armada_host import ArmadaHost
 from manager import sha,active_processes
 from launch_receipts import LaunchReceipts
 
-def verifies_options(actual,expected):
+def verifies_options(actual,expected,addon=None):
     if not isinstance(actual,str) or len(actual)>16384 or any(x in actual for x in ('$','`','\x00','\n','\r','\\')):return False
     try:tokens=shlex.split(actual)
     except ValueError:return False
@@ -19,6 +19,13 @@ def verifies_options(actual,expected):
         if key in leading:return False
         leading[key]=value
     if not all(leading.get(k)==v for k,v in expected.items()) or tokens.count('%command%')!=1:return False
+    if addon is not None:
+        wrapper='/usr/libexec/armada/armada-game-launch'
+        if (leading.get('ENABLE_GAMESCOPE_WSI')!='0' or tokens.count('ENABLE_GAMESCOPE_WSI=0')!=1
+                or any(t.startswith('ENABLE_GAMESCOPE_WSI=') and t!='ENABLE_GAMESCOPE_WSI=0' for t in tokens)
+                or tokens.count(wrapper)!=1 or tokens.count(addon['helper'])!=1):return False
+        at=tokens.index(wrapper)
+        if at<2 or tokens[at-2:at]!=['/usr/bin/python3',addon['helper']]:return False
     if '/usr/libexec/armada/armada-game-launch' in tokens:
         at=tokens.index('%command%')
         return at>=3 and tokens[at-3:at]==['/usr/bin/env']+[k+'='+expected[k] for k in ('PROTON_USE_ARM64','VKD3D_SHADER_OVERRIDE')]
@@ -72,12 +79,22 @@ class Plugin:
             if enabling:
                 expected=self.manager.launch_environment(game)
                 receipt=await asyncio.to_thread(LaunchReceipts(self.manager.companion(game)).owned,actual_options)
-                verified=bool(verifies_options(actual_options,expected) and
+                verified=bool(verifies_options(actual_options,expected,preview.get('launch_addon')) and
                     (receipt is None or (not receipt.get('pending') and receipt['after']==actual_options)))
                 if not verified:raise ValueError('Save and verify the V762 Steam launch settings before changing game files')
             return await asyncio.to_thread(self.manager.execute,token,launch_environment_verified=verified)
     async def owned_launch_options(self,gid,actual=None):
         async with self.lock:return await asyncio.to_thread(LaunchReceipts(self.manager.companion(self.manager.get_game(gid))).owned,actual)
+    async def remember_launch_addon(self,gid,actual_options):
+        async with self.lock:
+            game=self.manager.get_game(gid)
+            if active_processes(game['folder'],game.get('appid','')):raise ValueError('Close the game before saving the combined launcher')
+            if not self.manager.record(game).get('enabled'):raise ValueError('The managed V762 installation must be enabled')
+            receipt=await asyncio.to_thread(LaunchReceipts(self.manager.companion(game)).owned,actual_options)
+            if receipt is None:return {'remembered':False}
+            if receipt.get('pending') or receipt['after']!=actual_options:
+                raise ValueError('Only finalized plugin-owned launch settings can save a combined launcher')
+            return await asyncio.to_thread(self.manager.remember_launch_addon,gid,actual_options)
     async def prepare_launch_options(self,gid,before,after,restore=False):
         async with self.lock:
             game=self.manager.get_game(gid)

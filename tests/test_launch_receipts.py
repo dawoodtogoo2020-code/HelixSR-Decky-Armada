@@ -192,6 +192,56 @@ class LaunchApiTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await self.plugin.owned_launch_options('1', ''))['pending'], intent)
         self.assertEqual(await self.plugin.finalize_launch_options('1', intent['nonce'], 'new'), {'before': '', 'after': 'new'})
 
+    async def test_addon_capture_requires_closed_enabled_finalized_owned_options(self):
+        from unittest.mock import Mock
+        capture=Mock(return_value={'remembered':True})
+        self.plugin.manager.remember_launch_addon=capture
+        store=LaunchReceipts(self.companion)
+        intent=store.prepare('stock','owned')
+        globals_=self.plugin.remember_launch_addon.__func__.__globals__
+        with patch.dict(globals_,{'active_processes':lambda *args:[]}):
+            with self.assertRaisesRegex(ValueError,'finalized'):
+                await self.plugin.remember_launch_addon('1','stock')
+            capture.assert_not_called()
+            store.finalize(intent['nonce'],'owned')
+            self.assertEqual(await self.plugin.remember_launch_addon('1','owned'),{'remembered':True})
+            capture.assert_called_once_with('1','owned')
+            capture.reset_mock()
+            with self.assertRaises(ValueError):await self.plugin.remember_launch_addon('1','edited')
+            capture.assert_not_called()
+        with patch.dict(globals_,{'active_processes':lambda *args:['running']}):
+            with self.assertRaisesRegex(ValueError,'Close the game'):await self.plugin.remember_launch_addon('1','owned')
+        self.plugin.manager.record=lambda game:{'enabled':False}
+        with patch.dict(globals_,{'active_processes':lambda *args:[]}):
+            with self.assertRaisesRegex(ValueError,'enabled'):await self.plugin.remember_launch_addon('1','owned')
+        capture.assert_not_called()
+
+    async def test_no_owned_receipt_does_not_block_stock_toggle_or_capture_unowned_options(self):
+        from unittest.mock import Mock
+        self.plugin.manager.remember_launch_addon=Mock()
+        with patch.dict(self.plugin.remember_launch_addon.__func__.__globals__,{'active_processes':lambda *args:[]}):
+            self.assertEqual(await self.plugin.remember_launch_addon('1','unowned'),{'remembered':False})
+        self.plugin.manager.remember_launch_addon.assert_not_called()
+
+    async def test_execute_refuses_missing_combined_wrapper_before_game_file_changes(self):
+        from unittest.mock import Mock
+        env={'PROTON_USE_ARM64':'1','VKD3D_SHADER_OVERRIDE':'Z:/game/shader-override'}
+        helper='/games/PRAGMATA Mod Files/Combined-Helix-LSFG-20261012/pragmata-combined-launch.py'
+        addon={'helper':helper,'sha256':'pinned','environment':{'ENABLE_GAMESCOPE_WSI':'0'}}
+        self.plugin.manager.previews={'token':{'game':'1','action':'enable','launch_addon':addon}}
+        self.plugin.manager.launch_environment=lambda game:env
+        self.plugin.manager.execute=Mock(return_value={'message':'enabled'})
+        outer='PROTON_USE_ARM64=1 VKD3D_SHADER_OVERRIDE=Z:/game/shader-override '
+        inner='/usr/libexec/armada/armada-game-launch /usr/bin/env PROTON_USE_ARM64=1 VKD3D_SHADER_OVERRIDE=Z:/game/shader-override %command%'
+        for actual in [outer+inner,'ENABLE_GAMESCOPE_WSI=0 '+outer+inner,
+                       outer+f"/usr/bin/python3 '{helper}' "+inner]:
+            with self.assertRaisesRegex(ValueError,'Steam launch settings'):
+                await self.plugin.armada_execute('token',actual)
+        self.plugin.manager.execute.assert_not_called()
+        actual='ENABLE_GAMESCOPE_WSI=0 '+outer+f"/usr/bin/python3 '{helper}' "+inner
+        self.assertEqual(await self.plugin.armada_execute('token',actual),{'message':'enabled'})
+        self.plugin.manager.execute.assert_called_once_with('token',launch_environment_verified=True)
+
 
 if __name__ == '__main__':
     unittest.main()
