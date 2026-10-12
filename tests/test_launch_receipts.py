@@ -172,25 +172,18 @@ class LaunchApiTests(unittest.IsolatedAsyncioTestCase):
         with patch.dict(sys.modules, {'decky': SimpleNamespace()}):
             spec.loader.exec_module(module)
         self.plugin = module.Plugin()
-        self.plugin.api_lock = asyncio.Lock()
-        self.plugin.updating_plugin = False
-        self.plugin.plugin_updates = SimpleNamespace(pending=False)
-        self.plugin.manager = SimpleNamespace(get_game=lambda gid: {'id': gid}, companion=lambda game: self.companion)
+        self.plugin.lock = asyncio.Lock()
+        self.plugin.manager = SimpleNamespace(get_game=lambda gid: {'id': gid,'folder':self.temp.name}, companion=lambda game: self.companion,record=lambda game:{'enabled':True})
 
-    async def test_all_receipt_mutations_obey_plugin_update_guard(self):
-        self.plugin.plugin_updates.pending = True
-        calls = [lambda: self.plugin.prepare_launch_options('1', '', 'new'),
-                 lambda: self.plugin.finalize_launch_options('1', 'a' * 32, 'new'),
-                 lambda: self.plugin.remember_launch_options('1', '', 'new'),
-                 lambda: self.plugin.owned_launch_options('1', 'new')]
-        for call in calls:
-            with self.assertRaisesRegex(ValueError, 'pending Decky plugin update'):
-                await call()
+    async def test_restore_refuses_enabled_game(self):
+        with patch.dict(self.plugin.prepare_launch_options.__func__.__globals__,{'active_processes':lambda *args:[]}):
+            with self.assertRaisesRegex(ValueError,'stock upscaler'):
+                await self.plugin.prepare_launch_options('1', 'new', '',True)
         self.assertFalse(self.companion.exists())
 
     async def test_rpc_lock_serializes_prepare_and_reconcile(self):
         import asyncio
-        async with self.plugin.api_lock:
+        async with self.plugin.lock:
             task = asyncio.create_task(self.plugin.prepare_launch_options('1', '', 'new'))
             await asyncio.sleep(0)
             self.assertFalse(task.done())

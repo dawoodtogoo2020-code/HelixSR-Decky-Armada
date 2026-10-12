@@ -1,10 +1,10 @@
 {
-  "name": "HelixSR Decky",
-  "author": "HelixSR Decky contributors",
+  "name": "HelixSR Decky Armada",
+  "author": "Blackheart909; HelixSR by lonewolf0622",
   "flags": [],
   "api_version": 1,
   "publish": {
     "tags": ["graphics", "upscaling", "proton"],
-    "description": "Per-game HelixSR management, compatibility assessment, updates and rendering diagnostics."
+    "description": "Pinned private V762 Snapdragon files for eligible Armada DX12 games. PRAGMATA tested; other titles unverified."
   }
 }

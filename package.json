@@ -1,7 +1,7 @@
 {
-  "name": "helixsr-decky",
-  "version": "0.1.18",
-  "description": "HelixSR manager for Decky Loader",
+  "name": "helixsr-decky-armada",
+  "version": "0.2.0",
+  "description": "V762 Snapdragon HelixSR manager for Armada Decky Loader",
   "type": "module",
   "license": "MIT",
   "scripts": {"build": "rollup -c", "typecheck": "tsc --noEmit", "test:frontend": "node --experimental-strip-types --test tests/test_frontend.mjs"},

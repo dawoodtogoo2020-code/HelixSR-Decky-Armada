@@ -1,0 +1,21 @@
+# HelixSR Decky Armada 0.2.0 preview
+
+This is the unofficial Blackheart909 Armada adaptation of HelixSR Decky. HelixSR itself is by lonewolf0622. V762 is a local Snapdragon shader revision of HelixSR 1.8.0 Model E, not an official HelixSR version number or NVIDIA DLSS release.
+
+1. Install Decky Loader on an Armada ARM64 system and install Steam's Proton Experimental (ARM64).
+2. Install the plugin ZIP through Decky's developer installation option. It uses the separate `HelixSR-Decky-Armada` plugin directory.
+3. Supply your own private V762 payload folder and select it in the plugin. The plugin verifies the exact provider, network assets, configuration and four shader hashes. Ordinary HelixSR downloads and automatic upstream updates cannot replace this revision.
+4. Close the selected game. Choose its DX12 executable if several are listed, and confirm DX12 when required. Review and apply Install V762.
+5. Select the game's FSR 3.1 upscaler, or use the OptiScaler route for eligible DX12 games. Test a save locally before considering the title compatible.
+
+The private source must contain `amd_fidelityfx_dx12.dll`, `helixsr_kernels.pak`, `helixsr_weights.bin`, `helixsr.ini`, and the four `shader-override/*.spv` files listed in `py_modules/armada_manager.py`. OptiScaler routes also require the complete OptiScaler and AMD FSR payload listed in `manager.PACKAGE_FILES`. This plugin does not generate these private assets or download NVIDIA weights. The separate V762 transform kit currently requires matching runtime dumps; a complete public extraction workflow is still pending.
+
+The plugin creates a companion folder beside each game: `<game> Mod Files/HelixSR-Decky-Armada`. It holds verified packages, the original game DLLs required for disabling, and installation and launch-setting records. Preserve it while the game is managed. The plugin changes only its recorded game files and owns only the Steam launch options it adds. Custom shell launch scripts and conflicting override assignments need manual review and are preserved.
+
+Use stock upscaler disables V762 and restores the recorded original. Enable V762 restores the pinned version. Remove restores game files. Repair launch settings retries an interrupted Steam save or restores this plugin's owned settings after disabling/removing. Recover interrupted change handles a game-file transaction. Close the game before all changes.
+
+Existing installations can be adopted only with the exact V762 files and an independently verified genuine original FSR DLL bound to that same game folder. The preview installed on the maintainer's Odin seeds PRAGMATA's known original; selecting a different source does not reuse that binding for another game.
+
+The read-only capability probe requires an actual Qualcomm adapter, 64..64 D3D12 wave limits and vkd3d-proton. It uses a separate prefix and does not change game settings or clocks. Matching hardware is necessary but does not prove game compatibility. PRAGMATA is the only personally tested title. The Witcher 3, Stellar Blade, Android GameHub, DeckDroid and GameNative remain unverified by this build. The Decky plugin targets Armada Linux; Android launchers need a separate integration.
+
+This preview contains no NVIDIA network weights, generated kernels, provider DLLs or compiled game shader overrides. Follow upstream terms when building private assets. HelixSR's author has permitted the unofficial adaptation. That permission does not grant redistribution rights to third-party network data.

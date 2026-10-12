@@ -401,7 +401,7 @@ def safe_extract(archive, destination):
 
 
 class Manager:
-    def __init__(self, home, settings):
+    def __init__(self, home, settings, host_eligible=None):
         self.home, self.settings = Path(home), Path(settings)
         self.settings.mkdir(parents=True, exist_ok=True)
         self.lock = threading.RLock()
@@ -410,6 +410,10 @@ class Manager:
         self.cancel = threading.Event()
         self.process = None
         self.transaction = None
+        # A specialized backend may supply a narrowly scoped host probe. The
+        # ordinary upstream manager keeps its x86_64-only policy.
+        self.host_eligible = host_eligible or (lambda: platform.machine().lower() in ('x86_64', 'amd64'))
+        self.host_reason = 'HelixSR requires an x86_64 host'
         self.cfg = load_json(self.settings / 'settings.json', {'imports': [], 'packages': {}, 'license': None})
 
     def save(self):
@@ -804,8 +808,8 @@ class Manager:
         dx11_title = DX11_ONLY_STEAM_APPS.get(str(game.get('appid', ''))) if game.get('source') == 'Steam' else None
         if dx11_title:
             reasons.append(f'{dx11_title} uses DirectX 11 only. HelixSR requires DirectX 12, and OptiScaler cannot change the game\'s renderer.')
-        if platform.machine().lower() not in ('x86_64', 'amd64'):
-            blocked.append('HelixSR requires an x86_64 host')
+        if not self.host_eligible():
+            blocked.append(self.host_reason)
         if os.name == 'posix' and os.geteuid() == 0:
             blocked.append('Plugin must run as the Steam user, without root permissions')
         if not route:
@@ -1525,6 +1529,10 @@ class Manager:
             raise ValueError('Game changed since preview; refresh and review again')
         return self.mutate(game, data, preview['action'], package)
 
+    def record_metadata(self, game, data, action):
+        """Backend-specific receipt fields, committed within the game transaction."""
+        return {}
+
     @game_locked
     def mutate(self, game, data, action, package=AUTO_PACKAGE):
         root, companion = Path(game['folder']), self.companion(game)
@@ -1615,6 +1623,7 @@ class Manager:
                 for rel in paths:
                     previous['baseline'].setdefault(rel, before[rel])
                 self.install_payload(game, data, previous, package)
+            previous.update(self.record_metadata(game, data, action))
             previous['current'] = {rel: sha(root / rel) if (root / rel).is_file() else None for rel in paths}
             previous['updated_at'], previous['game_build'] = time.time(), game.get('build')
             if game.get('manifest'):

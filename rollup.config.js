@@ -12,7 +12,7 @@ const dist = fileURLToPath(new URL("./dist", import.meta.url));
 const manifest = JSON.parse(readFileSync(new URL("./plugin.json", import.meta.url), "utf8"));
 // Match Decky's official React/UI globals without its obsolete glob/delete chain.
 export default {
-  input: "./src/index.tsx",
+  input: "./src/armadaIndex.tsx",
   plugins: [
     { name: "clean-owned-dist", buildStart() {
       if (dirname(dist) !== root || basename(dist) !== "dist" || (existsSync(dist) && lstatSync(dist).isSymbolicLink())) {
@@ -28,6 +28,6 @@ export default {
   context: "window",
   external: ["react", "react-dom", "@decky/ui"],
   treeshake: { preset: "smallest" },
-  output: { dir: "dist", format: "esm", sourcemap: true, exports: "default",
+  output: { dir: "dist", entryFileNames: "index.js", format: "esm", sourcemap: true, exports: "default",
     sourcemapPathTransform: path => path.replace(/^\.\.\//, `decky://decky/plugin/${encodeURIComponent(manifest.name)}/`) },
 };
