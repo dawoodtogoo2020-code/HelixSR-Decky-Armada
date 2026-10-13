@@ -1,0 +1,3 @@
+* text=auto eol=lf
+/model_setup/helixsr.ini -text
+/bin/armada_model_probe.cpp -text

@@ -2,6 +2,12 @@
 
 Plugin code: MIT, see LICENSE.
 
+## Armada model preparation
+
+`bin/armada_model_probe.cpp` is original MIT application code using public AMD FidelityFX C API declarations. The unmodified AMD headers, MIT licence and pinned upstream provenance are in `bin/include/ffx`. The helper captures no user game frames and contains no shader or model body. Its Windows executable uses the MinGW-w64 runtime notices already included in this distribution. `bin/armada_model_probe.build.json` records the source, header and executable hashes and the scope of CLI validation.
+
+The generic V762 transform programs are MIT source in `model_setup/v762`; the SPIR-V grammar retains its separate Khronos MIT licence. These programs and their manifest contain no compiled override or runtime dump. `model_setup/assets.json` pins official acquisition inputs. CPython, NumPy, DXC, HelixSR and DLSS are downloaded locally under their own terms and are not bundled in this ZIP. The temporary Apache-licensed converter adaptation changes only the guarded synthesis executable selection for the native ARM64/Wine route; its original notices are retained.
+
 ## Bundled HTML parser
 
 The backend includes CPython 3.11.17's pure-Python HTML parser, entity table, HTML helpers and markup base under the private `_helix_html` and `_helix_markupbase` module names. Decky's frozen Python omits these standard-library modules. Only internal import names were changed to avoid modifying or shadowing the host's libraries. Upstream copyright and license terms remain separate from this project's MIT license. The full [CPython license](licenses/cpython-3.11.17-LICENSE.txt), source URLs, original and modified hashes, and change summary are included in [the provenance record](licenses/cpython-3.11.17-PROVENANCE.json). Both distributions include these notices.

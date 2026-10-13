@@ -7,6 +7,7 @@ from armada_manager import ArmadaManager,PINNED,SOURCE_ALLOWED
 from armada_host import ArmadaHost
 from manager import sha,active_processes
 from launch_receipts import LaunchReceipts
+from armada_model_setup import ArmadaModelSetup
 
 def verifies_options(actual,expected,addon=None):
     if not isinstance(actual,str) or len(actual)>16384 or any(x in actual for x in ('$','`','\x00','\n','\r','\\')):return False
@@ -37,16 +38,31 @@ class Plugin:
         self.host=ArmadaHost(decky.DECKY_USER_HOME,decky.DECKY_PLUGIN_SETTINGS_DIR,Path(__file__).parent)
         await asyncio.to_thread(self.host.refresh)
         self.manager=ArmadaManager(decky.DECKY_USER_HOME,decky.DECKY_PLUGIN_SETTINGS_DIR,host_probe=self.host.snapshot)
+        self.model_setup=ArmadaModelSetup(self.manager,self.host,Path(__file__).parent,decky.DECKY_PLUGIN_SETTINGS_DIR)
         decky.logger.info('HelixSR Decky Armada ready; ordinary upstream updates disabled')
-    async def _unload(self):pass
+    async def _unload(self):
+        if hasattr(self,'model_setup'):await asyncio.to_thread(self.model_setup.close)
     async def _uninstall(self):pass
     async def library(self):
         async with self.lock:return await asyncio.to_thread(self.manager.refresh)
     async def armada_source_status(self):return await asyncio.to_thread(self.manager.source_status)
     async def armada_capabilities(self,refresh=False):
-        async with self.lock:return await asyncio.to_thread(self.host.refresh) if refresh else self.host.snapshot()
+        async with self.lock:
+            if refresh:self._setup_idle()
+            return await asyncio.to_thread(self.host.refresh) if refresh else self.host.snapshot()
+    def _setup_idle(self):
+        if self.model_setup.busy():raise ValueError('Model setup is running. Finish or cancel it before changing an installation.')
+    async def armada_model_plan(self,gid,executable=None):
+        async with self.lock:return await asyncio.to_thread(self.model_setup.plan,gid,executable)
+    async def armada_model_start(self,token,accepted=False):
+        async with self.lock:return await asyncio.to_thread(self.model_setup.start,token,accepted)
+    async def armada_model_status(self):
+        return await asyncio.to_thread(self.model_setup.status)
+    async def armada_model_cancel(self,job_id):
+        async with self.lock:return await asyncio.to_thread(self.model_setup.cancel,job_id)
     async def armada_register_source(self,source):
         async with self.lock:
+            self._setup_idle()
             path=Path(source)
             if not path.is_absolute() or self.manager._symlink_in_path(path) or not path.is_dir():raise ValueError('Choose a real local V762 folder')
             files={}
@@ -59,7 +75,9 @@ class Plugin:
             if not set(PINNED).issubset(files) or not set(files).issubset(SOURCE_ALLOWED):raise ValueError('Choose the V762 payload folder, not its parent or an ordinary HelixSR release')
             return await asyncio.to_thread(self.manager.register_source,str(path),files)
     async def armada_prepare(self,gid,executable=None):
-        async with self.lock:return await asyncio.to_thread(self.manager.prepare_private,gid,executable)
+        async with self.lock:
+            self._setup_idle()
+            return await asyncio.to_thread(self.manager.prepare_private,gid,executable)
     async def armada_status(self,gid,executable=None):
         async with self.lock:
             result=await asyncio.to_thread(self.manager.status,gid)
@@ -68,9 +86,12 @@ class Plugin:
                 result.update(selected)
             return result
     async def armada_preview(self,gid,action,dx12_confirmed=False,executable=None):
-        async with self.lock:return await asyncio.to_thread(self.manager.preview,gid,action,bool(dx12_confirmed),executable)
+        async with self.lock:
+            self._setup_idle()
+            return await asyncio.to_thread(self.manager.preview,gid,action,bool(dx12_confirmed),executable)
     async def armada_execute(self,token,actual_options=None):
         async with self.lock:
+            self._setup_idle()
             preview=self.manager.previews.get(token)
             if not preview:raise ValueError('Preview expired; review the change again')
             game=self.manager.get_game(preview['game'])
@@ -87,6 +108,7 @@ class Plugin:
         async with self.lock:return await asyncio.to_thread(LaunchReceipts(self.manager.companion(self.manager.get_game(gid))).owned,actual)
     async def remember_launch_addon(self,gid,actual_options):
         async with self.lock:
+            self._setup_idle()
             game=self.manager.get_game(gid)
             if active_processes(game['folder'],game.get('appid','')):raise ValueError('Close the game before saving the combined launcher')
             if not self.manager.record(game).get('enabled'):raise ValueError('The managed V762 installation must be enabled')
@@ -97,6 +119,7 @@ class Plugin:
             return await asyncio.to_thread(self.manager.remember_launch_addon,gid,actual_options)
     async def prepare_launch_options(self,gid,before,after,restore=False):
         async with self.lock:
+            self._setup_idle()
             game=self.manager.get_game(gid)
             if active_processes(game['folder'],game.get('appid','')):raise ValueError('Close the game before changing launch settings')
             if restore and self.manager.record(game).get('enabled'):

@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "status": "compiled_and_host_numeric_and_negative_cli_tests_passed",
+  "source": {
+    "path": "armada_model_probe.cpp",
+    "sha256": "d86e901dbd0e315a3faee0ee8f57353bae00a5d0407ea573c351fb7d43beb9e9",
+    "bytes": 40879
+  },
+  "executable": {
+    "path": "armada_model_probe.exe",
+    "sha256": "a6f2765a4b759893dc411b5c36916319ca8450ecc1f44a08049686e1db482bf5",
+    "bytes": 1207808,
+    "pe_machine": "0x8664",
+    "pe_architecture": "x86_64",
+    "pe_optional_magic": "0x020b"
+  },
+  "headers": {
+    "repository": "https://github.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK",
+    "tag": "v1.1.4",
+    "commit": "c6efa6bf7f2027b3ec94f28578bb5965eabb9e55",
+    "files": [
+      {
+        "path": "ffx_api.h",
+        "sha256": "408b4203545e8299ed188fbb1d9ddfe0932b73ea6e8b14fe10edcf1f45771561",
+        "bytes": 7623,
+        "pin_matched": true
+      },
+      {
+        "path": "ffx_api_types.h",
+        "sha256": "dee2782813d22047c068e0fb27d1347324f8ce79d280a4672848b3b294cb12fe",
+        "bytes": 14748,
+        "pin_matched": true
+      },
+      {
+        "path": "ffx_upscale.h",
+        "sha256": "1155bcdcea9c10e6a95507bc9422ca062a853ac84250f0b09a637a66836b3ac1",
+        "bytes": 13946,
+        "pin_matched": true
+      },
+      {
+        "path": "dx12/ffx_api_dx12.h",
+        "sha256": "215804fba316acb81d2c463b6bbce36c53cc63465c15b8c9858554c8111fae24",
+        "bytes": 13073,
+        "pin_matched": true
+      },
+      {
+        "path": "LICENSE.txt",
+        "sha256": "82cf74fc23885107c7f69249ac3f1dac55898ff68320eb2c753984cae6b2d78a",
+        "bytes": 1115,
+        "pin_matched": true
+      }
+    ]
+  },
+  "review": {
+    "context_flags": "HDR | DEPTH_INVERTED | DEPTH_INFINITE",
+    "debug_checking_flag": false,
+    "null_masks": "ffxApiGetResourceDX12(nullptr), explicit compute-read state",
+    "input_states": "COPY_DEST -> NON_PIXEL_SHADER_RESOURCE before first dispatch",
+    "output_state": "UNORDERED_ACCESS + UAV barrier -> COPY_SOURCE -> UNORDERED_ACCESS each frame; copy completed by synchronous queue fence before Map",
+    "lifetimes": "Readback, uploads, textures, commands and context descriptors retained through fenced GPU completion and context destruction; readback retained until process exit on healthy undrained queue",
+    "timeout": "15 seconds per fence wait, one bounded cleanup drain; on healthy undrained queue retain bounded allocations/code until process exit and do not claim context destroyed",
+    "exposure": "Explicit 1x1 R32_FLOAT texture uploaded with 1.0f; COPY_DEST -> NON_PIXEL_SHADER_RESOURCE; bound as desc.exposure; unit controlled fixture only",
+    "numeric_validation": "Each frame requires all RGB finite, any nonzero RGB, and at least one channel varying spatially; exact RGB comparisons independent of alpha; API passed remains independent of numeric quality",
+    "decode": "R9G9B9E5: component mantissa * 2^(sharedExponent - 24), stride uses placed-footprint Offset and RowPitch",
+    "scene_structure": "Luminance correlation against mapped analytic checker centers, excluding eight input pixels near each cell edge; diagnostic only, acceptance threshold null until target calibration"
+  },
+  "tests": [
+    {
+      "name": "no_arguments",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "timeout_ms": 5000,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result": "passed",
+      "provider_loaded": false,
+      "adapter_queries": false
+    },
+    {
+      "name": "one_argument",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "timeout_ms": 5000,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result": "passed",
+      "provider_loaded": false,
+      "adapter_queries": false
+    },
+    {
+      "name": "relative_bundle_rejected",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "timeout_ms": 5000,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result": "passed",
+      "provider_loaded": false,
+      "adapter_queries": false
+    },
+    {
+      "name": "relative_report_rejected",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "timeout_ms": 5000,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result": "passed",
+      "provider_loaded": false,
+      "adapter_queries": false
+    },
+    {
+      "name": "dos_device_component_rejected",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "timeout_ms": 5000,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result": "passed",
+      "provider_loaded": false,
+      "adapter_queries": false
+    },
+    {
+      "name": "missing_provider_rejected_before_graphics_api",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "timeout_ms": 5000,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result": "passed",
+      "provider_loaded": false,
+      "adapter_queries": false
+    },
+    {
+      "name": "existing_report_never_overwritten",
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "timeout_ms": 5000,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result": "passed",
+      "provider_loaded": false,
+      "adapter_queries": false
+    },
+    {
+      "name": "actual_cpp_numeric_fixtures",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "timeout_ms": 5000,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result": "passed",
+      "provider_loaded": false,
+      "adapter_queries": false
+    }
+  ],
+  "compiler": {
+    "version": "clang version 23.1.3",
+    "target": "x86_64-w64-windows-gnu",
+    "flags": [
+      "-std=c++17",
+      "-O0",
+      "-static",
+      "-municode",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Ibin/include/ffx",
+      "-ld3d12",
+      "-ldxgi",
+      "-ldxguid",
+      "-lole32"
+    ],
+    "exit_code": 0,
+    "path": "D:/Tools/msys64/clang64/bin/clang++.exe"
+  },
+  "numeric_fixtures": [
+    "black rejected",
+    "constant red rejected",
+    "varying alpha with constant RGB rejected",
+    "structured finite RGB accepted with mean0.5 variance0.25",
+    "nonfinite accumulator rejected",
+    "shared exponent min/max decoded",
+    "padded rows and nonzero offset scanned",
+    "positive/negative luminance correlation verified"
+  ],
+  "test_helper": {
+    "path": "../tests/test_probe_numeric.py",
+    "sha256": "da41c4956425f5633b6c3e32ed6f2d412a6dfc2fe463546f99f4c3f2634fbc38",
+    "status": "2 unittest methods passed, 8 bounded host-only invocations",
+    "controller_change": "Host-only suite now skips on non-Windows; re-run on Windows passed both methods and all eight invocations"
+  },
+  "validation_limits": [
+    "No provider or graphics device was invoked",
+    "No GPU readback or driver transition runtime validation",
+    "Numerical validity is necessary, not sufficient for expected scene or neural correctness",
+    "Structure threshold not calibrated; diagnostic scalar only",
+    "Unit exposure does not fix Witcher auto-exposure",
+    "No gameplay, performance or compatibility claim"
+  ]
+}

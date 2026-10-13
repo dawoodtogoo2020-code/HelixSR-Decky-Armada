@@ -4,7 +4,9 @@ Free, unofficial experimental Armada Linux adaptation by Blackheart909. HelixSR 
 
 [Download the plugin](https://github.com/dawoodtogoo2020-code/HelixSR-Decky-Armada/releases/tag/v0.3.1-armada-preview) Â· [Installation and required assets](ARMADA_INSTALL.md) Â· [Known issues and test evidence](RELEASE_STATUS.md) Â· [V762 source tools](https://github.com/dawoodtogoo2020-code/HelixSR-Snapdragon-V762)
 
-**Read before downloading:** this plugin requires your own exact private V762 assets. It does not download or generate the model. The public source tools still need matching runtime dumps; a complete ordinary-user extraction workflow is missing. Installing this ZIP alone will not produce a working model.
+**Current public release:** 0.3.1 requires your own exact private V762 assets. Its separate source tools need matching runtime dumps. Installing the published 0.3.1 ZIP alone will not produce a model.
+
+**0.4.0-rc.1 candidate:** adds **Set up model**, which downloads pinned official inputs, builds Model E locally and generates the four matching V762 overrides in an isolated probe. No supplied private folder is needed by this workflow. Progress and cancellation are shown in the plugin; existing local import is under Advanced troubleshooting. This candidate is awaiting clean Odin generation and interface testing and has not replaced the public release. Asset preparation does not establish correct images or gameplay.
 
 Version 0.3.1 manages HelixSR 1.8.0 Model E with the V762 Snapdragon adaptation. Model E is sourced locally from DLSS 310.7.0; this is not a DLSS 3.7 release. The target is the tested Odin 3 / Adreno 830 Armada Linux environment. Other devices and Android launchers need their own validation.
 
@@ -12,7 +14,7 @@ The interface follows the Steam Deck plugin's status and setup flow. Games lists
 
 **Witcher 3 still has flashing black geometry and occasional full-frame flashes.** Its matched original FSR test was clean. PRAGMATA has historical physical Helix and LSFG 2x confirmation. Version 0.3.1 installed with all 47 files matching and settings preserved; that does not establish fresh gameplay acceptance, performance gains or broad compatibility.
 
-The ZIP includes plugin code, licence notices and our original source-backed capability probe. It includes no Helix provider DLL, NVIDIA weights, generated network pack, compiled override or private dump. Upstream downloads and model switching are disabled for this pinned adaptation. Lossless Scaling VK2 remains a separate plugin. GameHub, DeckDroid, GameNative and Thor are unverified.
+The candidate ZIP includes plugin code, licence notices and original source-backed capability and capture helpers. It includes no Helix provider DLL, NVIDIA weights, generated network pack, compiled override or private dump. Downloads come from pinned official sources only after explicit acknowledgement of linked terms. Generated material stays on the user's device. Other models are unavailable. Lossless Scaling VK2 remains a separate plugin. GameHub, DeckDroid, GameNative and Thor are unverified.
 
 Build from the matching source archive or tag: `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm test:armada`, `pnpm build`, then `python scripts/package_armada.py`. Complete source and third-party notices are included for rebuilding and library modifications.
 

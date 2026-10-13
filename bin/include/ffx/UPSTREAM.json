@@ -1,0 +1,43 @@
+{
+  "repository": "https://github.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK",
+  "tag": "v1.1.4",
+  "commit": "c6efa6bf7f2027b3ec94f28578bb5965eabb9e55",
+  "purpose": "Unmodified public C API declarations for the original two-dispatch analytic capture helper",
+  "files": [
+    {
+      "path": "ffx_api.h",
+      "upstream_path": "ffx-api/include/ffx_api/ffx_api.h",
+      "url": "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/c6efa6bf7f2027b3ec94f28578bb5965eabb9e55/ffx-api/include/ffx_api/ffx_api.h",
+      "sha256": "408b4203545e8299ed188fbb1d9ddfe0932b73ea6e8b14fe10edcf1f45771561",
+      "bytes": 7623
+    },
+    {
+      "path": "ffx_api_types.h",
+      "upstream_path": "ffx-api/include/ffx_api/ffx_api_types.h",
+      "url": "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/c6efa6bf7f2027b3ec94f28578bb5965eabb9e55/ffx-api/include/ffx_api/ffx_api_types.h",
+      "sha256": "dee2782813d22047c068e0fb27d1347324f8ce79d280a4672848b3b294cb12fe",
+      "bytes": 14748
+    },
+    {
+      "path": "ffx_upscale.h",
+      "upstream_path": "ffx-api/include/ffx_api/ffx_upscale.h",
+      "url": "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/c6efa6bf7f2027b3ec94f28578bb5965eabb9e55/ffx-api/include/ffx_api/ffx_upscale.h",
+      "sha256": "1155bcdcea9c10e6a95507bc9422ca062a853ac84250f0b09a637a66836b3ac1",
+      "bytes": 13946
+    },
+    {
+      "path": "dx12/ffx_api_dx12.h",
+      "upstream_path": "ffx-api/include/ffx_api/dx12/ffx_api_dx12.h",
+      "url": "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/c6efa6bf7f2027b3ec94f28578bb5965eabb9e55/ffx-api/include/ffx_api/dx12/ffx_api_dx12.h",
+      "sha256": "215804fba316acb81d2c463b6bbce36c53cc63465c15b8c9858554c8111fae24",
+      "bytes": 13073
+    },
+    {
+      "path": "LICENSE.txt",
+      "upstream_path": "LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/GPUOpen-LibrariesAndSDKs/FidelityFX-SDK/c6efa6bf7f2027b3ec94f28578bb5965eabb9e55/LICENSE.txt",
+      "sha256": "82cf74fc23885107c7f69249ac3f1dac55898ff68320eb2c753984cae6b2d78a",
+      "bytes": 1115
+    }
+  ]
+}

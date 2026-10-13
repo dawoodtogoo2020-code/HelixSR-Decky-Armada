@@ -5,6 +5,6 @@
   "api_version": 1,
   "publish": {
     "tags": ["graphics", "upscaling", "proton"],
-    "description": "Pinned private V762 Snapdragon files for eligible Armada DX12 games. PRAGMATA tested; other titles unverified."
+    "description": "Experimental local Model E setup and V762 manager for eligible Armada DX12 games. Check gameplay separately."
   }
 }
