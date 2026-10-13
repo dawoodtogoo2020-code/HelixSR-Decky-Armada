@@ -173,6 +173,7 @@ class LaunchApiTests(unittest.IsolatedAsyncioTestCase):
             spec.loader.exec_module(module)
         self.plugin = module.Plugin()
         self.plugin.lock = asyncio.Lock()
+        self.plugin.model_setup = SimpleNamespace(busy=lambda: False)
         self.plugin.manager = SimpleNamespace(get_game=lambda gid: {'id': gid,'folder':self.temp.name}, companion=lambda game: self.companion,record=lambda game:{'enabled':True})
 
     async def test_restore_refuses_enabled_game(self):
