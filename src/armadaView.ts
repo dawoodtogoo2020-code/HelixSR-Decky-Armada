@@ -66,9 +66,10 @@ export function viewGame(game:Game|undefined,source:Source|undefined,selection:S
   view.primary={action,label:labels[action],enabled:action==="disable"?canRestore:ready};
   if(game.managed) view.toggle={checked:game.enabled,enabled:game.enabled?canRestore:ready};
   view.title=game.enabled?"HelixSR enabled":game.managed?"Original game selected":game.legacy?"Existing installation found":"Ready to install";
-  view.detail="HelixSR 1.8, Model E, V762. Installed files do not confirm working gameplay or frame generation.";
-  if(game.gameplay_warning)view.detail+=" "+game.gameplay_warning;
-  view.nextStep=game.route==="direct"?"Choose AMD FSR in the game, then check gameplay.":"Review the OptiScaler proxy setup, then check gameplay.";
+  view.detail=game.gameplay_warning||"";
+  view.nextStep=game.enabled
+    ? game.route==="direct"?"Choose AMD FSR in-game.":"Use the configured OptiScaler proxy in-game."
+    : game.managed?"Enable HelixSR to use Model E.":game.route==="direct"?"Install, then choose AMD FSR in-game.":"Review the OptiScaler proxy installation.";
   view.color=game.enabled?"#22c55e":"#60a5fa";
   if(running){
     view.title="Game is running";view.detail="File and Steam launch changes are unavailable while the game is running.";

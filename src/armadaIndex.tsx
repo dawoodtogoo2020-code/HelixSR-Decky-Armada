@@ -11,6 +11,8 @@ type SetupPlan = {can_start:boolean; token?:string; blockers?:string[]; download
 const rpc = <T,>(method:string,...args:unknown[]):Promise<T> => callable<unknown[],T>(method)(...args);
 let preferred = "";
 const card = {padding:"12px",borderRadius:"8px",background:"rgba(255,255,255,0.06)",overflowWrap:"anywhere" as const};
+const compact = {...card,padding:"8px 10px",fontSize:"13px",lineHeight:"1.4"};
+const gameName = {display:"block",whiteSpace:"normal" as const,overflowWrap:"anywhere" as const,textAlign:"left" as const};
 function errorText(error:unknown):string {
   const message=error instanceof Error ? error.message : typeof error==="string" ? error : "The request could not be completed. Refresh status and try again.";
   return message.split("\n")[0].slice(0,500);
@@ -24,6 +26,7 @@ function Content() {
   const [executable,setExecutable]=useState<string>();
   const [dx12,setDx12]=useState(false);
   const [busy,setBusy]=useState(false);
+  const [activity,setActivity]=useState("");
   const [loading,setLoading]=useState(true);
   const [modal,setModal]=useState(false);
   const [error,setError]=useState("");
@@ -74,14 +77,14 @@ function Content() {
     if (id) await readStatus(id,generation.current);
     else setLoading(false);
   }
-  function begin():boolean {
+  function begin(message="Checking the proposed change…"):boolean {
     if (operation.current || !mounted.current) return false;
     if (polling.current) {setError("Fresh game status is being checked. Wait for it to finish, then try again.");return false;}
-    operation.current=true; setBusy(true); setError(""); return true;
+    operation.current=true; setBusy(true); setActivity(message); setError(""); return true;
   }
   function finish() {operation.current=false; if (mounted.current) {setBusy(false); setModal(false);}}
   async function refresh() {
-    if (!begin()) return;
+    if (!begin("Checking installed games…")) return;
     try {await refreshLibrary();} catch(cause) {if(mounted.current)setError(errorText(cause));} finally {finish();}
   }
   useEffect(()=>{
@@ -119,7 +122,7 @@ function Content() {
   },[selected,executable,setupActive]);
   async function chooseSource() {
     if (setupActive) return;
-    if (!begin()) return;
+    if (!begin("Verifying local files…")) return;
     const version=generation.current;
     try {
       const folder=await openFilePicker(FileSelectionType.FOLDER,source?.source || "/var/home/armada",true,true);
@@ -130,7 +133,7 @@ function Content() {
     } catch(cause) {if(mounted.current && version===generation.current)setError(errorText(cause));} finally {finish();}
   }
   async function startSetup() {
-    if (!game || loading || setupActive || !begin()) return;
+    if (!game || loading || setupActive || !begin("Checking model setup…")) return;
     const id=game.id,version=generation.current;
     try {
       const plan=await rpc<SetupPlan>("armada_model_plan",id,executable ?? null);
@@ -158,13 +161,14 @@ function Content() {
     } catch(cause) {if(isCurrent(id,version))setError(errorText(cause));finish();}
   }
   async function cancelSetup() {
-    if (!setup?.id || !setupActive || !begin()) return;
+    if (!setup?.id || !setupActive || !begin("Stopping model setup…")) return;
     try {const job=await rpc<SetupJob>("armada_model_cancel",setup.id);if(mounted.current)setSetup(job);}
     catch(cause) {if(mounted.current)setError(errorText(cause));} finally {finish();}
   }
   async function apply(change:PreparedChange,id:string,version:number) {
     try {
       if (!isCurrent(id,version)) return;
+      setActivity("Applying the change…");
       const result=await client.current.applyPreview(change);
       if (!isCurrent(id,version)) return;
       toaster.toast({title:"HelixSR Armada",body:result.message,duration:6500});
@@ -193,7 +197,7 @@ function Content() {
     } catch(cause) {if(isCurrent(id,version))setError(errorText(cause));finish();}
   }
   async function repair() {
-    if (!game || loading || setupActive || game.installation_status?.running || !begin()) return;
+    if (!game || loading || setupActive || game.installation_status?.running || !begin("Repairing launch settings…")) return;
     const id=game.id,version=generation.current;
     try {
       const body=await client.current.repairLaunch(game);
@@ -204,34 +208,33 @@ function Content() {
   const view=viewGame(game,source,{executable,dx12});
   const blocked=busy || modal || loading || setupActive || !!game?.installation_status?.running;
   const options=candidates.map(item=>({label:item.name,data:item.id}));
-  const statusCard=<><PanelSectionRow><div style={card}><div style={{fontWeight:600,color:view.color}}>{view.title}</div><p>{view.detail}</p><div>{view.nextStep}</div></div></PanelSectionRow>
-    {game && view.needsExecutable && <PanelSectionRow><DropdownItem label="DX12 executable" disabled={blocked} selectedOption={executable} rgOptions={(game.executable_choices || []).map(item=>({label:item.path,data:item.path}))} onChange={value=>{
+  const statusCard=<><PanelSectionRow><div style={compact}><div style={{fontWeight:600,color:view.color}}>{view.title}</div><div>{view.nextStep}</div></div></PanelSectionRow>
+    {game && view.needsExecutable && <PanelSectionRow><DropdownItem layout="below" label="DX12 executable" disabled={blocked} selectedOption={executable} rgOptions={(game.executable_choices || []).map(item=>({label:item.path,data:item.path}))} onChange={value=>{
       if(operation.current)return; generation.current++;currentExe.current=value.data;setExecutable(value.data);setDx12(false);setLoading(true);setError("");
     }}/></PanelSectionRow>}
     {game && view.needsDx12 && <PanelSectionRow><ToggleField label="DX12 is selected in this game" description="Confirm the renderer in the game's own settings." checked={dx12} disabled={busy || modal || setupActive || !!game.installation_status?.running} onChange={value=>{if(!operation.current)setDx12(value);}}/></PanelSectionRow>}
-    {view.primary && (!view.toggle || !["enable","disable"].includes(view.primary.action)) && <PanelSectionRow><ButtonItem disabled={blocked || !view.primary.enabled} onClick={()=>void act(view.primary!.action)}>{view.primary.label}</ButtonItem></PanelSectionRow>}
-    {view.toggle && <PanelSectionRow><ToggleField label="HelixSR enabled" description={view.toggle.checked ? "Use original to return to the stock upscaler." : "Enable the installed V762 upscaler."} checked={view.toggle.checked} disabled={blocked || !view.toggle.enabled} onChange={value=>void act(value ? "enable" : "disable")}/></PanelSectionRow>}
-    {busy && <PanelSectionRow><div>{modal ? "Review the proposed change to continue." : "Checking and applying the change. Please wait."}</div></PanelSectionRow>}
-    {loading && selected && !busy && <PanelSectionRow><div>Waiting for fresh game status. Actions are unavailable until it is verified.</div></PanelSectionRow>}
-    {error && <PanelSectionRow><div style={{color:"#ffb3b3",overflowWrap:"anywhere"}}>{error}</div></PanelSectionRow>}</>;
+    {view.primary && (!view.toggle || !["enable","disable"].includes(view.primary.action)) && <PanelSectionRow><ButtonItem layout="below" disabled={blocked || !view.primary.enabled} onClick={()=>void act(view.primary!.action)}>{view.primary.label}</ButtonItem></PanelSectionRow>}
+    {view.toggle && <PanelSectionRow><ToggleField label="Enable HelixSR" description="Off uses the original upscaler." checked={view.toggle.checked} disabled={blocked || !view.toggle.enabled} onChange={value=>void act(value ? "enable" : "disable")}/></PanelSectionRow>}
+    {view.detail && <PanelSectionRow><div style={compact}>{view.detail}</div></PanelSectionRow>}
+    {loading && selected && !busy && <PanelSectionRow><div>Waiting for fresh game status. Actions are unavailable until it is verified.</div></PanelSectionRow>}</>;
   return <><PanelSection title="Games">
-    <PanelSectionRow><div>HelixSR 1.8 · Model E · V762</div></PanelSectionRow>
-    <PanelSectionRow><div>{data ? `${candidates.length} detected DX12 game${candidates.length===1 ? "" : "s"}` : "Checking installed games…"}</div></PanelSectionRow>
-    {options.length>0 && <PanelSectionRow><DropdownItem label="Game" disabled={busy || modal || setupActive} rgOptions={options} selectedOption={reviewId ? undefined : selected} onChange={value=>choose(value.data)}/></PanelSectionRow>}
+    {options.length>0 && <PanelSectionRow><DropdownItem layout="below" label={`${candidates.length} detected DX12 game${candidates.length===1 ? "" : "s"}`} menuLabel="Choose a DX12 game" strDefaultLabel="Select a game" renderButtonValue={value=><span style={gameName}>{value}</span>} disabled={busy || modal || setupActive} rgOptions={options} selectedOption={reviewId ? undefined : selected} onChange={value=>choose(value.data)}/></PanelSectionRow>}
+    {busy && <PanelSectionRow><div style={{fontSize:"13px"}}>{modal ? "Review the proposed change to continue." : activity}</div></PanelSectionRow>}
+    {error && <PanelSectionRow><div style={{color:"#ffb3b3",overflowWrap:"anywhere"}}>{error}</div></PanelSectionRow>}
     {!options.length && data && <PanelSectionRow><div>No detected DX12 candidates. Existing installation records are available in Advanced troubleshooting.</div></PanelSectionRow>}
-    {!reviewId && statusCard}
+    {!reviewId && selected && statusCard}
     {source && !source.ready && !setupActive && <><PanelSectionRow><div>Set up Model E once, then review installation for each detected DX12 game.</div></PanelSectionRow><PanelSectionRow><ButtonItem disabled={blocked || !game || !!reviewId} onClick={()=>void startSetup()}>Set up model</ButtonItem></PanelSectionRow></>}
     {setup?.state && setup.state!=="idle" && <PanelSectionRow><div style={card}><div>{setupActive ? "Model setup in progress" : setup.state==="completed" ? "Model preparation completed" : "Model setup needs attention"}</div><p>{setup.message}</p>{setup.cleanup_warning && <p>{setup.cleanup_warning}</p>}{setup.record_warning && <p>{setup.record_warning}</p>}</div></PanelSectionRow>}
     {setupActive && <PanelSectionRow><ButtonItem disabled={busy || modal} onClick={()=>void cancelSetup()}>Cancel model setup</ButtonItem></PanelSectionRow>}
     <PanelSectionRow><ButtonItem disabled={busy || modal || setupActive} onClick={()=>void refresh()}>Refresh games and status</ButtonItem></PanelSectionRow>
   </PanelSection><PanelSection title="Settings">
     <PanelSectionRow><ToggleField label="Show settings" checked={settings} onChange={setSettings}/></PanelSectionRow>
-    {settings && <><PanelSectionRow><div>{source?.ready ? "Local V762 source verified." : source?.reason || "Source has not been verified."}</div></PanelSectionRow><PanelSectionRow><ButtonItem disabled={blocked || !game || !!reviewId} onClick={()=>void startSetup()}>{source?.ready ? "Rebuild model locally" : "Set up model"}</ButtonItem></PanelSectionRow><PanelSectionRow><div>Helix runtime: {game?.helix_runtime || "No runtime information reported."}</div></PanelSectionRow><PanelSectionRow><div>Frame generation: {game?.framegen_summary || "No frame generation status reported."} Lossless Scaling VK2 is controlled separately.</div></PanelSectionRow></>}
+    {settings && <><PanelSectionRow><div style={compact}>HelixSR 1.8 · Model E · V762. Installed files do not confirm working gameplay or frame generation.</div></PanelSectionRow><PanelSectionRow><div>{source?.ready ? "Local V762 source verified." : source?.reason || "Source has not been verified."}</div></PanelSectionRow><PanelSectionRow><ButtonItem disabled={blocked || !game || !!reviewId} onClick={()=>void startSetup()}>{source?.ready ? "Rebuild model locally" : "Set up model"}</ButtonItem></PanelSectionRow><PanelSectionRow><div>Helix runtime: {game?.helix_runtime || "No runtime information reported."}</div></PanelSectionRow><PanelSectionRow><div>Frame generation: {game?.framegen_summary || "No frame generation status reported."} Lossless Scaling VK2 is controlled separately.</div></PanelSectionRow></>}
   </PanelSection><PanelSection title="Advanced troubleshooting">
     <PanelSectionRow><ToggleField label="Show advanced" checked={advanced} disabled={busy || modal} onChange={value=>{setAdvanced(value);if(!value && reviewId)choose(selectInitialGame(data?.games || [],preferred));}}/></PanelSectionRow>
     {advanced && <>
       <PanelSectionRow><ButtonItem disabled={busy || modal || setupActive} onClick={()=>void chooseSource()}>Import existing local V762 files</ButtonItem></PanelSectionRow>
-      {records.length>0 && <PanelSectionRow><DropdownItem label="Existing installation records" description="Includes records needing review or restoration." disabled={busy || modal || setupActive} selectedOption={reviewId || undefined} rgOptions={records.map(item=>({label:item.name,data:item.id}))} onChange={value=>choose(value.data,true)}/></PanelSectionRow>}
+      {records.length>0 && <PanelSectionRow><DropdownItem layout="below" label="Existing installation records" menuLabel="Review an installation" renderButtonValue={value=><span style={gameName}>{value}</span>} description="Includes records needing review or restoration." disabled={busy || modal || setupActive} selectedOption={reviewId || undefined} rgOptions={records.map(item=>({label:item.name,data:item.id}))} onChange={value=>choose(value.data,true)}/></PanelSectionRow>}
       {reviewId && statusCard}
       {game && <><PanelSectionRow><div style={card}><div>Route: {view.routeLabel}</div><div>Installed: {game.installed_version || "Not recorded"} · {game.installed_model || "Model not recorded"}</div><div>Helix runtime: {game.helix_runtime || "Not reported"}</div><div>Frame generation: {game.framegen_summary || "Not reported"}. Lossless Scaling VK2 is controlled separately.</div><div>Folder: {game.folder}</div>{game.reasons.map((reason,index)=><p key={index}>{reason}</p>)}{game.installation_status?.issues?.map(issue=><div key={issue.code}><p>{issue.title}: {issue.reason}</p>{issue.steps.map((step,index)=><p key={index}>{step}</p>)}</div>)}</div></PanelSectionRow>
         {view.canRecover && view.primary?.action!=="recover" && <PanelSectionRow><ButtonItem disabled={blocked} onClick={()=>void act("recover")}>Recover interrupted change</ButtonItem></PanelSectionRow>}

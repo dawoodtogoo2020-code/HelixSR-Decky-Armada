@@ -1,6 +1,8 @@
 # Release review, 13 October 2026
 
-## 0.4.0-rc.1 automatic setup candidate
+## 0.4.0-rc.2 automatic setup candidate
+
+The rc.2 interface puts the game selector across the panel, keeps the enable toggle directly below a compact status summary, and moves general runtime evidence limits into Settings. Game-specific warnings remain visible below the action. Library scans, setup checks and file changes have distinct progress text. This follows an actual rc.1 Odin screenshot; the new layout still requires Odin readback. Backend, model recipe and safety guards are unchanged.
 
 This candidate adds explicit terms review, pinned public downloads, isolated local Model E conversion, fresh shader capture, exact V762 transforms, progress, cancellation, installed dependency reuse and source activation rollback. The public installer still contains no provider, model pack, weight file or compiled override. The existing 0.3.1 release is unchanged.
 

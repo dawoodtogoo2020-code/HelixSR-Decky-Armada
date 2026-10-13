@@ -6,7 +6,7 @@ Free, unofficial experimental Armada Linux adaptation by Blackheart909. HelixSR 
 
 **Current public release:** 0.3.1 requires your own exact private V762 assets. Its separate source tools need matching runtime dumps. Installing the published 0.3.1 ZIP alone will not produce a model.
 
-**0.4.0-rc.1 candidate:** adds **Set up model**, which downloads pinned official inputs, builds Model E locally and generates the four matching V762 overrides in an isolated probe. No supplied private folder is needed by this workflow. Progress and cancellation are shown in the plugin; existing local import is under Advanced troubleshooting. This candidate is awaiting clean Odin generation and interface testing and has not replaced the public release. Asset preparation does not establish correct images or gameplay.
+**0.4.0-rc.2 candidate:** adds **Set up model**, which downloads pinned official inputs, builds Model E locally and generates the four matching V762 overrides in an isolated probe. No supplied private folder is needed by this workflow. Progress and cancellation are shown in the plugin; existing local import is under Advanced troubleshooting. This candidate is awaiting clean Odin generation and interface testing and has not replaced the public release. Asset preparation does not establish correct images or gameplay.
 
 Version 0.3.1 manages HelixSR 1.8.0 Model E with the V762 Snapdragon adaptation. Model E is sourced locally from DLSS 310.7.0; this is not a DLSS 3.7 release. The target is the tested Odin 3 / Adreno 830 Armada Linux environment. Other devices and Android launchers need their own validation.
 
