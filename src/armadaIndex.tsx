@@ -158,7 +158,7 @@ function Content() {
     {error && <PanelSectionRow><div style={{color:"#ffb3b3",overflowWrap:"anywhere"}}>{error}</div></PanelSectionRow>}</>;
   return <><PanelSection title="Games">
     <PanelSectionRow><div>HelixSR 1.8 · Model E · V762</div></PanelSectionRow>
-    <PanelSectionRow><div>{data ? `${candidates.length} detected DX12 candidate${candidates.length===1 ? "" : "s"}` : "Checking installed games…"}</div></PanelSectionRow>
+    <PanelSectionRow><div>{data ? `${candidates.length} detected DX12 game${candidates.length===1 ? "" : "s"}` : "Checking installed games…"}</div></PanelSectionRow>
     {options.length>0 && <PanelSectionRow><DropdownItem label="Game" disabled={busy || modal} rgOptions={options} selectedOption={reviewId ? undefined : selected} onChange={value=>choose(value.data)}/></PanelSectionRow>}
     {!options.length && data && <PanelSectionRow><div>No detected DX12 candidates. Existing installation records are available in Advanced troubleshooting.</div></PanelSectionRow>}
     {!reviewId && statusCard}
@@ -179,7 +179,7 @@ function Content() {
         {game.logs?.map(log=><PanelSectionRow key={log.path}><div style={card}><div>{log.path}</div>{log.excerpt && <pre style={{whiteSpace:"pre-wrap",fontSize:"12px"}}>{log.excerpt}</pre>}</div></PanelSectionRow>)}
       </>}
       {data?.warnings.map((warning,index)=><PanelSectionRow key={index}><div>{warning}</div></PanelSectionRow>)}
-      <PanelSectionRow><div>About: plugin 0.3.0. HelixSR by lonewolf0622. Unofficial Armada integration by Blackheart909. This adaptation uses pinned local V762 assets. Upstream downloads and model switching are unavailable. Installation and saved settings do not prove gameplay compatibility.</div></PanelSectionRow>
+      <PanelSectionRow><div>About: plugin 0.3.1. HelixSR by lonewolf0622. Unofficial Armada integration by Blackheart909. This adaptation uses pinned local V762 assets. Upstream downloads and model switching are unavailable. Installation and saved settings do not prove gameplay compatibility.</div></PanelSectionRow>
       {source?.source && <PanelSectionRow><div style={{overflowWrap:"anywhere"}}>Local source: {source.source}</div></PanelSectionRow>}
     </>}
   </PanelSection></>;

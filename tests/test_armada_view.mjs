@@ -103,3 +103,16 @@ test('unknown modification and restore permissions fail closed',()=>{
   assert.equal(viewGame(dynamic,source,{dx12:true,executable:'unscanned.exe'}).primary.enabled,false);
   assert.equal(viewGame({...dynamic,dx12_detected:false},source,{dx12:true,executable:'dynamic.exe'}).primary.enabled,false);
 });
+test('blocked managed DX12 records stay visible for review without file permissions',()=>{
+  const stalePermissions=viewGame(game({managed:true,compatibility:'blocked'}),source,selection);
+  assert.equal(stalePermissions.primary.enabled,false);assert.equal(stalePermissions.toggle.enabled,false);assert.doesNotMatch(stalePermissions.title,/ready to install/i);
+  for(const code of ['hash_mismatch','build_unsupported','anti_cheat']){
+    const item=game({managed:true,enabled:true,compatibility:'blocked',installation_status:{running:false,can_modify:false,can_restore:false,issues:[{code,title:'Review existing installation',reason:'Existing files need review',steps:['Review files.'],blocking:true}]}});
+    assert.equal(isDx12Candidate(item),true);assert.deepEqual(eligibleGames([item]),[item]);
+    const view=viewGame(item,source,selection);
+    assert.equal(view.primary.enabled,false);assert.equal(view.toggle.enabled,false);assert.equal(view.canRemove,false);assert.equal(view.canRecover,false);
+    assert.match(view.title,/review/i);assert.doesNotMatch(view.title,/ready to install/i);
+    assert.equal(isDx12Candidate({...item,managed:false}),false);
+    for(const patch of [{dx12_detected:false},{dx12_detected:undefined},{renderer_unsupported:true},{route:'native'},{appid:'0'},{compatibility:'unsupported'}])assert.equal(isDx12Candidate({...item,...patch}),false);
+  }
+});

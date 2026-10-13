@@ -2,7 +2,7 @@
 
 Unofficial Blackheart909 adaptation of HelixSR Decky for Snapdragon Armada Linux. HelixSR is by lonewolf0622.
 
-Version 0.3.0 brings the Steam Deck status-first interface to the pinned HelixSR 1.8.0 Model E V762 backend. Games suggests only Steam entries with scanned DX12 evidence and a supported installation route. A title or DLL filename is insufficient. Existing records remain available in Advanced troubleshooting for review, recovery and restoration.
+Version 0.3.1 brings the Steam Deck status-first interface to the pinned HelixSR 1.8.0 Model E V762 backend. Games suggests only Steam entries with scanned DX12 evidence and a supported installation route. A title or DLL filename is insufficient. Managed DX12 games remain visible when they need review, with unsafe actions disabled. Existing non-DX12 records remain available in Advanced troubleshooting for recovery and restoration.
 
 The main view shows the next step and one install or enable control. It checks fresh game status, pauses changes while a game is running, preserves unrelated Steam options and verifies every launch-setting write. Source setup lives in Settings; recovery, removal, diagnostics and ownership details live in Advanced troubleshooting. Existing OptiScaler and fakenvapi configuration is preserved using the current Steam Deck ownership rules.
 

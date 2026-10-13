@@ -18,8 +18,11 @@ export function isDx12Candidate(game:Game):boolean {
   const blockers=game.installation_status?.issues?.filter(issue=>issue.blocking)||[];
   const selectableBlock=game.compatibility==="blocked" && blockers.length>0 &&
     blockers.every(issue=>issue.code==="game_running"||issue.code==="executable_selection");
+  // Keep an existing, evidenced DX12 installation reachable for review even
+  // when its files need attention. Action permissions are evaluated separately.
+  const managedReview=game.managed && game.compatibility!=="unsupported";
   return typeof game.appid==="string" && /^\d+$/.test(game.appid) && Number.isSafeInteger(appid) && appid>0 && appid<=4294967295 &&
-    game.dx12_detected===true && (game.compatibility==="candidate"||selectableBlock) &&
+    game.dx12_detected===true && (game.compatibility==="candidate"||selectableBlock||managedReview) &&
     (game.route==="direct" || game.route==="optiscaler") && !game.renderer_unsupported;
 }
 export function eligibleGames(games:Game[]):Game[] {
@@ -57,7 +60,7 @@ export function viewGame(game:Game|undefined,source:Source|undefined,selection:S
   // The backend exposes only scanned x64 PE choices. Their renderer imports
   // may load dynamically; explicit confirmation complements independent game evidence.
   const executableReady=!view.needsExecutable || !!game.executable_choices?.some(choice=>choice.path===selected && (choice.dx12||selection.dx12));
-  const ready=candidate && source?.ready===true && status?.can_modify===true && !blocking && executableReady && (!view.needsDx12||selection.dx12);
+  const ready=candidate && game.compatibility==="candidate" && source?.ready===true && status?.can_modify===true && !blocking && executableReady && (!view.needsDx12||selection.dx12);
   const action:Action=game.legacy?"adopt":!game.managed?"install":game.enabled?"disable":"enable";
   const labels={adopt:"Adopt installation",install:"Install HelixSR",enable:"Enable HelixSR",disable:"Use original",remove:"Remove installation",recover:"Recover installation",update:"Update installation"};
   view.primary={action,label:labels[action],enabled:action==="disable"?canRestore:ready};
@@ -83,7 +86,7 @@ export function viewGame(game:Game|undefined,source:Source|undefined,selection:S
     view.nextStep="Recover the installation, then refresh status.";view.color="#f59e0b";
     view.primary={action:"recover",label:labels.recover,enabled:true};if(view.toggle)view.toggle.enabled=false;return view;
   }
-  if(blocking || !candidate || status?.can_modify!==true){
+  if(blocking || game.compatibility==="blocked" || !candidate || status?.can_modify!==true){
     view.title=blocking?.title||"Installation needs review";
     view.detail=blocking?.reason||status?.summary||game.reasons.join(" ")||"This game is not a supported DX12 installation candidate.";
     view.nextStep=blocking?.steps.join(" ")||"Review the installation status before making changes.";view.color="#f59e0b";
