@@ -20,6 +20,8 @@ Witcher 3 DX12 uses its direct FSR provider route. Helix V762 flashed black text
 
 Stellar Blade and Android GameHub, DeckDroid and GameNative remain unverified. This plugin targets Armada Linux.
 
-## Publication gates
+## Public preview limits
 
-Both releases remain private and unpublished. The separate source-only V762 kit reproduces four override hashes from held runtime dumps, but a clean ordinary-user workflow from official assets to matching dumps is still missing. Physical acceptance, final package review and publication approval also remain outstanding. The author's permission for a free unofficial adaptation does not grant redistribution rights to third-party network assets.
+The free public experimental releases contain plugin code and generic source tools only. The separate source-only V762 kit reproduces four override hashes from held runtime dumps, but a clean ordinary-user workflow from official assets to matching dumps is still missing. The current public packages passed manifest and full-history review; complete gameplay acceptance and the ordinary-user extraction workflow remain outstanding. The author's permission for a free unofficial adaptation does not grant redistribution rights to third-party network assets.
+
+The public 0.3.1 installer preserves the exact runtime code bytes from the installed candidate (source baseline 2ac296be4047c21401ed62719339ab4d5e7ceab8). Only release documentation and provenance metadata were refreshed for publication. The installed candidate SHA is 6f2ee74d290fdc79234607865e59aff0749099c907e0c04b1e403551f2cfff9a; the public archive has a separate recorded digest. Source and checksums accompany the release.

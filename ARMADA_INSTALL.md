@@ -1,12 +1,14 @@
-# HelixSR Decky Armada 0.3.1 preview
+# HelixSR Decky Armada 0.3.1 experimental preview
 
 This is the unofficial Blackheart909 Armada adaptation of HelixSR Decky. HelixSR itself is by lonewolf0622. V762 is a local Snapdragon shader revision of HelixSR 1.8.0 Model E, not an official HelixSR version number or NVIDIA DLSS release.
+
+**Before starting:** you need the exact private V762 assets described below. There is no complete public model installer yet. The [source transform preview](https://github.com/dawoodtogoo2020-code/HelixSR-Snapdragon-V762) starts from matching private dumps and does not generate them. Model E uses DLSS 310.7.0; V762 is not DLSS 3.7.
 
 1. Install Decky Loader on an Armada ARM64 system and install Steam's Proton Experimental (ARM64).
 2. Install the plugin ZIP through Decky's developer installation option. It uses the separate `HelixSR-Decky-Armada` plugin directory.
 3. Supply your own private V762 payload folder and select it in the plugin. The plugin verifies the exact provider, network assets, configuration and four shader hashes. Ordinary HelixSR downloads and automatic upstream updates cannot replace this revision.
 4. Games lists only Steam games with scanned DX12 evidence and an eligible route. Close the selected game. Choose its executable and confirm DX12 when requested. Review and apply Install HelixSR.
-5. Select the game's FSR 3.1 upscaler, or use the OptiScaler route for eligible DX12 games. Test a save locally before considering the title compatible.
+5. Select AMD FSR in the game for the direct provider route, or use the OptiScaler route for eligible DX12 games. Test a save locally before considering the title compatible.
 
 The private source must contain `amd_fidelityfx_dx12.dll`, `helixsr_kernels.pak`, `helixsr_weights.bin`, `helixsr.ini`, and the four `shader-override/*.spv` files listed in `py_modules/armada_manager.py`. OptiScaler routes also require the complete OptiScaler and AMD FSR payload listed in `manager.PACKAGE_FILES`. This plugin does not generate these private assets or download NVIDIA weights. The separate V762 transform kit currently requires matching runtime dumps; a complete public extraction workflow is still pending.
 

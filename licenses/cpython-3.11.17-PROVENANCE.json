@@ -10,30 +10,47 @@
       "vendored": "py_modules/_helix_html.py",
       "source_sha256": "923d82d821e75e8d235392c10c145ab8587927b3faf9c952bbd48081eebd8522",
       "vendored_sha256": "b49a3e75c7c10e7389ee73b5c20e953cd53b72f82490f5989e8b274139a5cace",
-      "changes": ["Replace import from html.entities with _helix_html_entities"]
+      "changes": [
+        "Replace import from html.entities with _helix_html_entities"
+      ],
+      "vendored_crlf_sha256": "c07ec651af7c1c6a9f4b033e1495eb2cee58dfbcac01c28d3125fa296932d22e"
     },
     {
       "source": "Lib/html/parser.py",
       "vendored": "py_modules/_helix_html_parser.py",
       "source_sha256": "3a02c73b41c1095a7cddb8b824387ffb875b19f37e0e6f591753d7a88a2fe52a",
       "vendored_sha256": "583cce1498834d2deebf7e3ecb69f069997097440761cca13cf2761764787195",
-      "changes": ["Replace import _markupbase with _helix_markupbase as _markupbase", "Replace import from html with _helix_html"]
+      "changes": [
+        "Replace import _markupbase with _helix_markupbase as _markupbase",
+        "Replace import from html with _helix_html"
+      ],
+      "vendored_crlf_sha256": "289ce5fce1e312ef8b6f3e2ce4a290591de2ed141fccf6460ec9ff6f478040b9"
     },
     {
       "source": "Lib/html/entities.py",
       "vendored": "py_modules/_helix_html_entities.py",
       "source_sha256": "282b7cdd567bbbf3d7d7ccd49fae1d3ebc7f7ab64058d781193620913773731b",
       "vendored_sha256": "282b7cdd567bbbf3d7d7ccd49fae1d3ebc7f7ab64058d781193620913773731b",
-      "changes": []
+      "changes": [],
+      "vendored_crlf_sha256": "b2d93881289ef8659077278ee1c2e4b94eb2257824622eee5e948c35bb125d3e"
     },
     {
       "source": "Lib/_markupbase.py",
       "vendored": "py_modules/_helix_markupbase.py",
       "source_sha256": "cb14dd6f2e2439eb70b806cd49d19911363d424c2b6b9f4b73c9c08022d47030",
       "vendored_sha256": "cb14dd6f2e2439eb70b806cd49d19911363d424c2b6b9f4b73c9c08022d47030",
-      "changes": []
+      "changes": [],
+      "vendored_crlf_sha256": "914361cf055d5d2e1b69a2603a5c94b22dedb987d72ce9f791afec0524718f28"
     }
   ],
   "license_source": "LICENSE",
-  "license_sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf"
+  "license_sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+  "hash_basis": {
+    "source_sha256": "Raw upstream source bytes",
+    "vendored_sha256": "Canonical LF bytes after the listed internal import changes",
+    "vendored_crlf_sha256": "Equivalent CRLF bytes; no source-content change",
+    "license_sha256": "Canonical LF upstream licence bytes",
+    "license_crlf_sha256": "Equivalent CRLF licence bytes"
+  },
+  "license_crlf_sha256": "343237e4be4e1787bb54019abcd61d48465ac7fc2e12f4183846fa68b8447371"
 }

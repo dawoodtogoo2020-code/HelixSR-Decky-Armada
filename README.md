@@ -1,15 +1,19 @@
 # HelixSR Decky Armada
 
-Unofficial Blackheart909 adaptation of HelixSR Decky for Snapdragon Armada Linux. HelixSR is by lonewolf0622.
+Free, unofficial experimental Armada Linux adaptation by Blackheart909. HelixSR is by [lonewolf0622](https://github.com/lonewolf0622/HelixSR).
 
-Version 0.3.1 brings the Steam Deck status-first interface to the pinned HelixSR 1.8.0 Model E V762 backend. Games suggests only Steam entries with scanned DX12 evidence and a supported installation route. A title or DLL filename is insufficient. Managed DX12 games remain visible when they need review, with unsafe actions disabled. Existing non-DX12 records remain available in Advanced troubleshooting for recovery and restoration.
+[Download the plugin](https://github.com/dawoodtogoo2020-code/HelixSR-Decky-Armada/releases/tag/v0.3.1-armada-preview) Â· [Installation and required assets](ARMADA_INSTALL.md) Â· [Known issues and test evidence](RELEASE_STATUS.md) Â· [V762 source tools](https://github.com/dawoodtogoo2020-code/HelixSR-Snapdragon-V762)
 
-The main view shows the next step and one install or enable control. It checks fresh game status, pauses changes while a game is running, preserves unrelated Steam options and verifies every launch-setting write. Source setup lives in Settings; recovery, removal, diagnostics and ownership details live in Advanced troubleshooting. Existing OptiScaler and fakenvapi configuration is preserved using the current Steam Deck ownership rules.
+**Read before downloading:** this plugin requires your own exact private V762 assets. It does not download or generate the model. The public source tools still need matching runtime dumps; a complete ordinary-user extraction workflow is missing. Installing this ZIP alone will not produce a working model.
 
-This is a private release candidate. Version 0.2.1 was installed and passed closed-game toggle checks on the Odin. PRAGMATA has historical physical gameplay confirmation. Witcher 3 has unresolved flashing with Helix; its matched original FSR test was clean. Installation is not proof of compatibility. See [release status](RELEASE_STATUS.md) and [installation instructions](ARMADA_INSTALL.md).
+Version 0.3.1 manages HelixSR 1.8.0 Model E with the V762 Snapdragon adaptation. Model E is sourced locally from DLSS 310.7.0; this is not a DLSS 3.7 release. The target is the tested Odin 3 / Adreno 830 Armada Linux environment. Other devices and Android launchers need their own validation.
 
-The ZIP includes plugin code and our source-backed capability probe. It contains no Helix provider, network weights, network pack or shader overrides. Supply your own exact local V762 assets. Ordinary upstream downloads and model switching are disabled. Lossless Scaling VK2 remains a separate plugin. Android GameHub, DeckDroid and GameNative need separate integration.
+The interface follows the Steam Deck plugin's status and setup flow. Games lists scanned DX12 entries with a supported route; a title or DLL filename is insufficient. Managed DX12 games remain visible during safety review, with unsafe actions disabled. Settings holds source setup. Advanced troubleshooting holds records, recovery, removal and diagnostics. The plugin checks fresh running status, verifies Steam launch settings, preserves unrelated options and existing configuration, and pauses file changes while a game is running.
 
-Build: `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm test:armada`, `pnpm build`, then `python scripts/package_armada.py`.
+**Witcher 3 still has flashing black geometry and occasional full-frame flashes.** Its matched original FSR test was clean. PRAGMATA has historical physical Helix and LSFG 2x confirmation. Version 0.3.1 installed with all 47 files matching and settings preserved; that does not establish fresh gameplay acceptance, performance gains or broad compatibility.
 
-Based on HelixSR Decky v0.1.18, with interface and configuration-preservation decisions from commit a6b42742d20e95137cb6b6f6356308b23db3eb65. Original license and third-party notices are retained. The complete public workflow for generating matching V762 runtime input dumps is still pending.
+The ZIP includes plugin code, licence notices and our original source-backed capability probe. It includes no Helix provider DLL, NVIDIA weights, generated network pack, compiled override or private dump. Upstream downloads and model switching are disabled for this pinned adaptation. Lossless Scaling VK2 remains a separate plugin. GameHub, DeckDroid, GameNative and Thor are unverified.
+
+Build from the matching source archive or tag: `pnpm install --frozen-lockfile`, `pnpm typecheck`, `pnpm test:armada`, `pnpm build`, then `python scripts/package_armada.py`. Complete source and third-party notices are included for rebuilding and library modifications.
+
+Based on HelixSR Decky v0.1.18, incorporating interface and configuration-preservation decisions from commit a6b42742d20e95137cb6b6f6356308b23db3eb65. The [author permitted this free unofficial adaptation](https://github.com/lonewolf0622/HelixSR/issues/3#issuecomment-6128425735). Applicable third-party terms remain separate. See [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md).

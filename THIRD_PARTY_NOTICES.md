@@ -30,7 +30,7 @@ The SVG path is represented as a React component by React Icons and displayed wi
 
 ## Host-provided and build-only dependencies
 
-React, React DOM and `@decky/ui` are provided by the Steam/Decky runtime as external globals and are not copied into this plugin ZIP. `@decky/rollup` is the build configuration helper, not bundled application code. Their upstream licenses still govern their own distributions. The ZIP contains only the selected bundled frontend, backend source, documentation and explicitly listed license/source files.
+React, React DOM and `@decky/ui` are provided by the Steam/Decky runtime as external globals and are not copied into this plugin ZIP. Rollup and its declared plugin chain are build dependencies, not bundled application code. Their upstream licenses still govern their own distributions. The ZIP contains only the selected bundled frontend, backend source, documentation and explicitly listed license/source files.
 
 ## Downloaded game components and local preparation
 
