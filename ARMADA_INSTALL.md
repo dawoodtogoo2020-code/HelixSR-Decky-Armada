@@ -1,4 +1,4 @@
-# HelixSR Decky Armada 0.3.0 preview
+# HelixSR Decky Armada 0.3.1 preview
 
 This is the unofficial Blackheart909 Armada adaptation of HelixSR Decky. HelixSR itself is by lonewolf0622. V762 is a local Snapdragon shader revision of HelixSR 1.8.0 Model E, not an official HelixSR version number or NVIDIA DLSS release.
 
@@ -16,7 +16,7 @@ The HelixSR enabled toggle switches between V762 and the recorded original. Sett
 
 Version 0.2.1 also preserves the intent of PRAGMATA's separately installed combined HelixSR/LSFG launch helper across a stock/V762 toggle. It captures only the recognized, finalized plugin-owned helper configuration before disabling. Re-enable verifies the helper's pinned hash and reapplies it to the current Steam options, retaining edits made while V762 was disabled. Conflicting options or a changed/missing helper block re-enable for review. Disable remains available when the helper is missing or changed. Remove restores the original Steam options and clears the helper-preservation record after restoring game files; it does not delete the independent helper or LSFG installation.
 
-The helper is not bundled or automatically installed by this preview. This integration is scoped to Steam PRAGMATA and the tested `Combined-Helix-LSFG-20261012/pragmata-combined-launch.py` helper. Version 0.2.1 was installed and its closed-game toggles passed. The new 0.3.0 interface needs separate device verification.
+The helper is not bundled or automatically installed by this preview. This integration is scoped to Steam PRAGMATA and the tested `Combined-Helix-LSFG-20261012/pragmata-combined-launch.py` helper. Version 0.2.1 was installed and its closed-game toggles passed. The new interface needs separate controller and visual verification. Managed DX12 games stay visible while ownership needs review; unsafe changes remain blocked.
 
 Existing installations can be adopted only with the exact V762 files and an independently verified genuine original FSR DLL bound to that same game folder. The preview installed on the maintainer's Odin seeds PRAGMATA's known original; selecting a different source does not reuse that binding for another game.
 

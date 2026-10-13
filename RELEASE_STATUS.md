@@ -1,6 +1,6 @@
 # Release review, 13 October 2026
 
-HelixSR Decky Armada 0.2.1 is installed on the Odin. Its 47 packaged files matched the installer, settings survived, and PRAGMATA/Witcher closed-game disable and enable cycles passed provider hashes and Steam readback. PRAGMATA's independently installed combined LSFG launcher was retained. Version 0.3.0 is the interface and DX12-filtering candidate; installation and physical controller checks are tracked separately.
+HelixSR Decky Armada 0.2.1 passed the original Odin installation and closed-game toggle checks: 47 package files matched, settings survived, and PRAGMATA/Witcher provider hashes and Steam launch readback passed. The independently installed PRAGMATA LSFG helper was retained. Version 0.3.0 subsequently installed and loaded. Version 0.3.1 keeps managed DX12 games visible during safety review. The new interface and gameplay acceptance remain separate checks.
 
 The 0.3.0 interface uses a detected-DX12 list, actionable status, one enable toggle, conditional executable/renderer setup, Settings and Advanced troubleshooting. Managed records excluded from suggestions remain accessible for restoration. Launch operations use an in-flight lock, fresh running status, exact readback and pending receipts. Configuration preservation follows the latest Steam Deck fixes.
 
@@ -12,7 +12,7 @@ Witcher 3 DX12 uses its direct FSR provider route. Helix V762 flashed black text
 
 ## Remaining Odin checks
 
-1. Load 0.3.0, check controller focus, DX12-only suggestions, existing records, source preservation and disabled actions while running.
+1. Load 0.3.1, check controller focus, DX12-only suggestions, existing records, source preservation and disabled actions while running.
 2. With games closed, verify toggles and interrupted launch repair, including exact readback and the independent PRAGMATA helper.
 3. Physically accept Witcher's image with Helix alone before testing LSFG Off-to-2x. Record sustained behavior, temperatures and pacing at the intended underclock.
 4. Cold-launch PRAGMATA after the new toggle cycle, including a reboot launch, and confirm image, helper activation and live LSFG controls.
