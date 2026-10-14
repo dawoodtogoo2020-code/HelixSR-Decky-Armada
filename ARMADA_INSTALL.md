@@ -1,4 +1,4 @@
-# HelixSR Decky Armada 0.3.1 experimental preview
+# HelixSR Decky Armada 0.3.2 experimental preview
 
 This is the unofficial Blackheart909 Armada adaptation of HelixSR Decky. HelixSR itself is by lonewolf0622. V762 is a local Snapdragon shader revision of HelixSR 1.8.0 Model E, not an official HelixSR version number or NVIDIA DLSS release.
 
@@ -25,3 +25,9 @@ Existing installations can be adopted only with the exact V762 files and an inde
 The read-only capability probe requires an actual Qualcomm adapter, 64..64 D3D12 wave limits and vkd3d-proton. It uses a separate prefix and does not change game settings or clocks. Matching hardware is necessary but does not prove game compatibility. PRAGMATA has historical physical confirmation. Witcher 3 has unresolved flashing with Helix despite a clean matched original FSR run. Stellar Blade and Android GameHub, DeckDroid and GameNative remain unverified. The Decky plugin targets Armada Linux; Android launchers need a separate integration.
 
 This preview contains no NVIDIA network weights, generated kernels, provider DLLs or compiled game shader overrides. Follow upstream terms when building private assets. HelixSR's author has permitted the unofficial adaptation. That permission does not grant redistribution rights to third-party network data.
+
+## 0.3.2 status-read recovery
+
+Game discovery and source/game status reads now stop waiting after 30 seconds if the backend does not answer. The plugin shows an error and makes Refresh games and status available again. This does not cancel a backend job or time out installation/enable/restore writes. A stopped Decky backend still needs to be started before games can be discovered.
+
+Automatic public-input model setup is still incomplete. This release contains the tested read-handling fix only; private diagnostic lifecycle candidates and unfinished model-generation work are excluded.

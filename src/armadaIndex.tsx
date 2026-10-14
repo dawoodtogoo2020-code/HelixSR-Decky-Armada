@@ -2,11 +2,13 @@ import {ButtonItem, DropdownItem, PanelSection, PanelSectionRow, ToggleField, Co
 import {callable, definePlugin, openFilePicker, FileSelectionType, toaster} from "@decky/api";
 import {useEffect, useRef, useState} from "react";
 import {FaAdjust} from "react-icons/fa";
+import {createArmadaReadRpc} from "./armadaReadRpc";
 import {createArmadaClient, type PreparedChange} from "./armadaClient";
 import {eligibleGames, managedGames, selectInitialGame, statusArguments, viewGame, type Action, type Game, type Source} from "./armadaView";
 
 type Library = {games:Game[]; warnings:string[]};
 const rpc = <T,>(method:string,...args:unknown[]):Promise<T> => callable<unknown[],T>(method)(...args);
+const readRpc = createArmadaReadRpc(rpc);
 let preferred = "";
 const card = {padding:"12px",borderRadius:"8px",background:"rgba(255,255,255,0.06)",overflowWrap:"anywhere" as const};
 function errorText(error:unknown):string {
@@ -46,7 +48,7 @@ function Content() {
     if (!metadata) return;
     polling.current=true;
     try {
-      const fresh=await rpc<Game>("armada_status",...statusArguments(metadata,currentExe.current));
+      const fresh=await readRpc<Game>("armada_status",...statusArguments(metadata,currentExe.current));
       if (!isCurrent(id,version) || fresh.id!==id) return;
       const merged={...scanned,...fresh}; latestGame.current=merged; setGame(merged); setLoading(false); setError("");
     } catch (cause) {if (isCurrent(id,version)) {setError(errorText(cause)); setLoading(true);}}
@@ -57,7 +59,7 @@ function Content() {
   }
   async function refreshLibrary() {
     const version=generation.current;
-    const [fresh,files]=await Promise.all([rpc<Library>("library"),rpc<Source>("armada_source_status")]);
+    const [fresh,files]=await Promise.all([readRpc<Library>("library"),readRpc<Source>("armada_source_status")]);
     if (!mounted.current || version!==generation.current) return;
     latestData.current=fresh; setData(fresh); setSource(files);
     const stillPresent=fresh.games.some(item=>item.id===active.current);
@@ -179,7 +181,7 @@ function Content() {
         {game.logs?.map(log=><PanelSectionRow key={log.path}><div style={card}><div>{log.path}</div>{log.excerpt && <pre style={{whiteSpace:"pre-wrap",fontSize:"12px"}}>{log.excerpt}</pre>}</div></PanelSectionRow>)}
       </>}
       {data?.warnings.map((warning,index)=><PanelSectionRow key={index}><div>{warning}</div></PanelSectionRow>)}
-      <PanelSectionRow><div>About: plugin 0.3.1. HelixSR by lonewolf0622. Unofficial Armada integration by Blackheart909. This adaptation uses pinned local V762 assets. Upstream downloads and model switching are unavailable. Installation and saved settings do not prove gameplay compatibility.</div></PanelSectionRow>
+      <PanelSectionRow><div>About: plugin 0.3.2. HelixSR by lonewolf0622. Unofficial Armada integration by Blackheart909. This adaptation uses pinned local V762 assets. Upstream downloads and model switching are unavailable. Installation and saved settings do not prove gameplay compatibility.</div></PanelSectionRow>
       {source?.source && <PanelSectionRow><div style={{overflowWrap:"anywhere"}}>Local source: {source.source}</div></PanelSectionRow>}
     </>}
   </PanelSection></>;
