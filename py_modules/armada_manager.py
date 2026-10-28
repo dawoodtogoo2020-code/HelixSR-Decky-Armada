@@ -62,6 +62,13 @@ def _strict_file(root, name, expected):
 
 
 class ArmadaManager(Manager):
+    def guard_newer_runtime(self, game):
+        root=Path(game['folder'])
+        provider=root/'amd_fidelityfx_upscaler_dx12.dll'
+        companion=root.with_name(root.name+' Mod Files')/'HelixSR-Decky-Adreno-2'
+        if companion.exists() or (provider.is_file() and sha(provider)=='33647875141293ebae0df8b79a18902a953b4f2b18fe5fe6980d73e1c4879ec7'):
+            raise ValueError('HelixSR 2.0 uses the Adreno controls. Legacy V762 actions cannot change this installation.')
+
     def __init__(self, home, settings, host_probe=None):
         self.private_settings = Path(settings)
         self.host_probe = host_probe
@@ -328,6 +335,7 @@ class ArmadaManager(Manager):
         return data
 
     def preview(self, gid, action, dx12_confirmed=False, executable=None):
+        self.guard_newer_runtime(self.get_game(gid))
         if action == 'adopt':
             result = self._preview_adopt(gid)
         else:
@@ -354,6 +362,8 @@ class ArmadaManager(Manager):
         return result
 
     def execute(self, token, launch_environment_verified=False):
+        preview=self.previews.get(token)
+        if preview:self.guard_newer_runtime(self.get_game(preview['game']))
         preview = self.previews.get(token)
         if preview and preview.get('action') == 'armada-adopt':
             if launch_environment_verified is not True:

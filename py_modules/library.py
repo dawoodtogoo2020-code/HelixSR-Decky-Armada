@@ -4,7 +4,6 @@ import json
 import os
 from pathlib import Path
 import re
-import sqlite3
 import struct
 
 
@@ -211,6 +210,11 @@ def lutris_database(path, warnings, max_rows=10000):
     """Read the small installed-Wine-game subset from an existing pga.db."""
     path = Path(path)
     if not path.is_file():
+        return None
+    try:
+        import sqlite3
+    except ImportError:
+        warnings.append('Lutris database support is unavailable in this Python runtime')
         return None
     try:
         if path.stat().st_size > 256 << 20:

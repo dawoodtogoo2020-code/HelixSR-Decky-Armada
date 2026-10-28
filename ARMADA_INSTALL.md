@@ -1,3 +1,9 @@
+# HelixSR 2.0 Adreno preview
+
+For version 0.5.0-adreno-preview, follow the current [README installation steps](README.md#install-and-use). The new PRAGMATA route uses a locally built official HelixSR 2.0 provider and does not require V762 shader overrides. Do not use V762 setup or restore tools against a 2.0 installation.
+
+The older instructions below apply only to the legacy V762 controls.
+
 # HelixSR Decky Armada 0.3.2 experimental preview
 
 This is the unofficial Blackheart909 Armada adaptation of HelixSR Decky. HelixSR itself is by lonewolf0622. V762 is a local Snapdragon shader revision of HelixSR 1.8.0 Model E, not an official HelixSR version number or NVIDIA DLSS release.

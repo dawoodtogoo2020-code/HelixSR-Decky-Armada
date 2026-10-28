@@ -74,7 +74,7 @@ test("exports the expected constants", () => {
   assert.equal(MAX_ARMADA_READ_TIMEOUT_MS, 120000);
   assert.deepEqual(
     [...ARMADA_READ_METHODS],
-    ["library", "armada_source_status", "armada_status", "armada_model_status"],
+    ["library", "armada_source_status", "armada_status", "armada_model_status", "helix2_library", "helix2_status"],
   );
 });
 

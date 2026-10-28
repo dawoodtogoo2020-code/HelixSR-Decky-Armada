@@ -14,6 +14,8 @@ export const ARMADA_READ_METHODS: readonly string[] = Object.freeze([
   "armada_source_status",
   "armada_status",
   "armada_model_status",
+  "helix2_library",
+  "helix2_status",
 ]);
 
 export const DEFAULT_ARMADA_READ_TIMEOUT_MS = 30000;

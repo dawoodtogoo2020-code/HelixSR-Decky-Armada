@@ -173,7 +173,7 @@ class LaunchApiTests(unittest.IsolatedAsyncioTestCase):
             spec.loader.exec_module(module)
         self.plugin = module.Plugin()
         self.plugin.lock = asyncio.Lock()
-        self.plugin.manager = SimpleNamespace(get_game=lambda gid: {'id': gid,'folder':self.temp.name}, companion=lambda game: self.companion,record=lambda game:{'enabled':True})
+        self.plugin.manager = SimpleNamespace(get_game=lambda gid: {'id': gid,'folder':self.temp.name}, companion=lambda game: self.companion,record=lambda game:{'enabled':True}, guard_newer_runtime=lambda game:None)
 
     async def test_restore_refuses_enabled_game(self):
         with patch.dict(self.plugin.prepare_launch_options.__func__.__globals__,{'active_processes':lambda *args:[]}):
@@ -222,6 +222,26 @@ class LaunchApiTests(unittest.IsolatedAsyncioTestCase):
         with patch.dict(self.plugin.remember_launch_addon.__func__.__globals__,{'active_processes':lambda *args:[]}):
             self.assertEqual(await self.plugin.remember_launch_addon('1','unowned'),{'remembered':False})
         self.plugin.manager.remember_launch_addon.assert_not_called()
+
+    async def test_newer_runtime_guard_blocks_launch_changes_and_addon_capture(self):
+        from unittest.mock import Mock
+        store = LaunchReceipts(self.companion)
+        intent = store.prepare('stock', 'owned')
+        store.finalize(intent['nonce'], 'owned')
+        path = self.companion / 'records' / 'launch-options.json'
+        before = path.read_bytes()
+        guard = Mock(side_effect=ValueError('Newer HelixSR runtime'))
+        capture = Mock()
+        self.plugin.manager.guard_newer_runtime = guard
+        self.plugin.manager.remember_launch_addon = capture
+        with patch.dict(self.plugin.prepare_launch_options.__func__.__globals__, {'active_processes': lambda *args: []}):
+            with self.assertRaisesRegex(ValueError, 'Newer HelixSR'):
+                await self.plugin.prepare_launch_options('1', 'owned', 'changed')
+            with self.assertRaisesRegex(ValueError, 'Newer HelixSR'):
+                await self.plugin.remember_launch_addon('1', 'owned')
+        self.assertEqual(guard.call_count, 2)
+        capture.assert_not_called()
+        self.assertEqual(path.read_bytes(), before)
 
     async def test_execute_refuses_missing_combined_wrapper_before_game_file_changes(self):
         from unittest.mock import Mock

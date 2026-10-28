@@ -3,6 +3,7 @@ import {callable, definePlugin, openFilePicker, FileSelectionType, toaster} from
 import {useEffect, useRef, useState} from "react";
 import {FaAdjust} from "react-icons/fa";
 import {createArmadaReadRpc} from "./armadaReadRpc";
+import {Helix2Panel} from "./helix2Panel";
 import {createArmadaClient, type PreparedChange} from "./armadaClient";
 import {eligibleGames, managedGames, selectInitialGame, statusArguments, viewGame, type Action, type Game, type Source} from "./armadaView";
 
@@ -27,6 +28,8 @@ function Content() {
   const [loading,setLoading]=useState(true);
   const [modal,setModal]=useState(false);
   const [error,setError]=useState("");
+  const [checkingCapabilities,setCheckingCapabilities]=useState(false);
+  const [capabilityMessage,setCapabilityMessage]=useState("");
   const [advanced,setAdvanced]=useState(false);
   const [settings,setSettings]=useState(false);
   const [reviewId,setReviewId]=useState("");
@@ -82,10 +85,23 @@ function Content() {
     if (!begin()) return;
     try {await refreshLibrary();} catch(cause) {if(mounted.current)setError(errorText(cause));} finally {finish();}
   }
+  async function checkCapabilities() {
+    if (!begin()) return;
+    setCheckingCapabilities(true); setCapabilityMessage("");
+    try {
+      const facts=await rpc<{vkd3d?:boolean; subgroup_min?:number; subgroup_max?:number; reason?:string}>("armada_capabilities",true);
+      await refreshLibrary();
+      if (mounted.current) setCapabilityMessage(facts.vkd3d === true && facts.subgroup_min === 64 && facts.subgroup_max === 64
+        ? "64-lane VKD3D support verified for legacy V762."
+        : facts.reason || "64-lane VKD3D support could not be verified.");
+    } catch(cause) {if(mounted.current)setError(errorText(cause));}
+    finally {if(mounted.current)setCheckingCapabilities(false);finish();}
+  }
   useEffect(()=>{
     mounted.current=true;
     void refresh();
-    return ()=>{mounted.current=false; generation.current++; dialog.current?.Close();};
+    // showModal may close the QAM view; keep its confirmation alive.
+    return ()=>{mounted.current=false; generation.current++;};
   },[]);
   useEffect(()=>{
     if (!selected) return;
@@ -166,6 +182,8 @@ function Content() {
     {!reviewId && statusCard}
     {source && !source.ready && <><PanelSectionRow><div>{source.reason || "Choose the verified local V762 source before installation."}</div></PanelSectionRow><PanelSectionRow><ButtonItem disabled={busy || modal} onClick={()=>void chooseSource()}>Choose local V762 files</ButtonItem></PanelSectionRow></>}
     <PanelSectionRow><ButtonItem disabled={busy || modal} onClick={()=>void refresh()}>Refresh games and status</ButtonItem></PanelSectionRow>
+    <PanelSectionRow><ButtonItem disabled={busy || modal} onClick={()=>void checkCapabilities()}>Check legacy device compatibility</ButtonItem></PanelSectionRow>
+    {(checkingCapabilities || capabilityMessage) && <PanelSectionRow><div>{checkingCapabilities ? "Checking device compatibility. This may take a minute." : capabilityMessage}</div></PanelSectionRow>}
   </PanelSection><PanelSection title="Settings">
     <PanelSectionRow><ToggleField label="Show settings" checked={settings} onChange={setSettings}/></PanelSectionRow>
     {settings && <><PanelSectionRow><div>{source?.ready ? "Local V762 source verified." : source?.reason || "Source has not been verified."}</div></PanelSectionRow><PanelSectionRow><ButtonItem disabled={busy || modal} onClick={()=>void chooseSource()}>Choose local V762 files</ButtonItem></PanelSectionRow><PanelSectionRow><div>Helix runtime: {game?.helix_runtime || "No runtime information reported."}</div></PanelSectionRow><PanelSectionRow><div>Frame generation: {game?.framegen_summary || "No frame generation status reported."} Lossless Scaling VK2 is controlled separately.</div></PanelSectionRow></>}
@@ -186,4 +204,8 @@ function Content() {
     </>}
   </PanelSection></>;
 }
-export default definePlugin(()=>({name:"HelixSR Decky Armada",titleView:<div className={staticClasses.Title}>HelixSR Armada</div>,content:<Content/>,icon:<FaAdjust/>}));
+function AdrenoContent() {
+  const [legacy,setLegacy]=useState(false);
+  return <><Helix2Panel/><PanelSection title="Legacy V762"><PanelSectionRow><ToggleField label="Show legacy controls" description="For earlier 1.8 installations. HelixSR 2.0 is protected from these actions." checked={legacy} onChange={setLegacy}/></PanelSectionRow></PanelSection>{legacy&&<Content/>}</>;
+}
+export default definePlugin(()=>({name:"HelixSR Decky Armada",titleView:<div className={staticClasses.Title}>HelixSR Adreno</div>,content:<AdrenoContent/>,icon:<FaAdjust/>}));

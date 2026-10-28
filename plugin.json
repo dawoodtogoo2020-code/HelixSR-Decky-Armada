@@ -5,6 +5,6 @@
   "api_version": 1,
   "publish": {
     "tags": ["graphics", "upscaling", "proton"],
-    "description": "Pinned private V762 Snapdragon files for eligible Armada DX12 games. PRAGMATA tested; other titles unverified."
+    "description": "HelixSR 2.0 settings and original-FSR switching for PRAGMATA on Odin 3 Armada. Requires a locally built official provider. Other games and Android are unverified."
   }
 }
