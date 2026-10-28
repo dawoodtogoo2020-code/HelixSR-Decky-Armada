@@ -25,7 +25,10 @@ jobs:
           pnpm typecheck
           pnpm build
           pnpm test:armada
-          pnpm audit --audit-level=low
+          python3 -m unittest discover -s tests -p 'test_dependency_audit.py'
+          audit_exit=0
+          pnpm audit --json --audit-level=low > audit.json || audit_exit=$?
+          python3 scripts/check_dependency_audit.py audit.json "$audit_exit"
           python3 -m unittest discover -s tests -p 'test_armada_backend.py'
           python3 -m unittest discover -s tests -p 'test_helix2*.py'
           python3 -m unittest discover -s tests -p 'test_armada_addons.py'

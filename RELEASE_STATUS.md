@@ -29,6 +29,10 @@ This short sample contains substantial frame-time spikes. It is not a controlled
 
 Historical 27 October measurements used 720p, system Mesa and 967 MHz: HelixSR 2.0 INT8 Performance measured 31.2-31.7 FPS versus stock FSR Performance at 34.8-35.7. The older V762 Balanced and newer 2.0 Performance results use different render presets and must not be presented as an equal-quality uplift. WinNative wave32 was observed, but its role in reported trails and a wave64 remedy remain unproven. Wave64 is available for deliberate comparisons, not enabled as an assumed fix.
 
+## Build audit
+
+The upstream audit reports one acknowledged low-severity development dependency finding, GHSA-gcqx-w48m-w2h4. Independent source review found its sole merge call receives fixed Rollup defaults, and the build tool is excluded from the installed ZIP. CI permits only the exact reviewed dependency/path/source until 28 November 2026; other findings still fail. See [the documented scope and controls](https://github.com/dawoodtogoo2020-code/HelixSR-Decky-Armada/blob/adreno-2-review/SECURITY.md).
+
 ## Distribution and remaining limits
 
 The archive includes no HelixSR provider/model DLL, weights, generated kernels or shader overrides. Build the official 2.0 source locally on the target device and select its fsr3-drop-in folder. Official setup binaries and generated providers are not modified by this plugin. A matching local provider is required, so the ZIP alone is not a model installer. See the [official 2.0 release](https://github.com/lonewolf0622/HelixSR/releases/tag/v2.0.0) and [upstream terms](https://github.com/lonewolf0622/HelixSR/blob/main/LICENSE).
